@@ -1,11 +1,14 @@
 package es.albertolongo.teamfinderapp.model.entity;
+
 import es.albertolongo.teamfinderapp.model.enums.Gender;
 import es.albertolongo.teamfinderapp.model.dto.PlayerDTO;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Past;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -20,6 +23,12 @@ public class Player implements Serializable {
 
     @NotBlank
     private String nickname;
+
+    @Pattern(
+            regexp = "\\\\.[Ii][Oo]$"
+    )
+    @Email
+    private String email;
 
     @NotBlank
     private String fullname;
@@ -37,21 +46,23 @@ public class Player implements Serializable {
         id = UUID.randomUUID();
     }
 
-    public Player(PlayerDTO playerDTO){
+    public Player(PlayerDTO playerDTO) {
         id = UUID.randomUUID();
         this.nickname = playerDTO.getNickname();
         this.fullname = playerDTO.getFullname();
+        this.email = playerDTO.getEmail();
         this.birthday = playerDTO.getBirthday();
         this.gender = Gender.valueOf(playerDTO.getGender());
         this.preferences = new GamePreferences(playerDTO.getPreferences());
     }
 
-    public Player(String nickname, String fullname,
+    public Player(String nickname, String fullname, String email,
                   LocalDate birthday, Gender gender,
                   GamePreferences gamePreferences) {
         id = UUID.randomUUID();
         this.nickname = nickname;
         this.fullname = fullname;
+        this.email = email;
         this.birthday = birthday;
         this.gender = gender;
         this.preferences = gamePreferences;
@@ -101,13 +112,14 @@ public class Player implements Serializable {
         this.preferences = preferences;
     }
 
-    public PlayerDTO toDTO(){
+    public PlayerDTO toDTO() {
 
         PlayerDTO playerDTO = new PlayerDTO();
 
         playerDTO.setId(id);
         playerDTO.setNickname(nickname);
         playerDTO.setFullname(fullname);
+        playerDTO.setEmail(email);
         playerDTO.setBirthday(birthday);
         playerDTO.setGender(gender.toString());
         playerDTO.setPreferences(preferences.toDTO());
