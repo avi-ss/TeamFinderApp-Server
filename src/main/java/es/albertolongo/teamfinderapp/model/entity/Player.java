@@ -1,8 +1,8 @@
 package es.albertolongo.teamfinderapp.model.entity;
 
+import es.albertolongo.teamfinderapp.model.enums.EntityType;
 import es.albertolongo.teamfinderapp.model.enums.Gender;
 import es.albertolongo.teamfinderapp.model.dto.PlayerDTO;
-import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -12,14 +12,9 @@ import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
-import java.util.UUID;
 
 @Entity
-public class Player implements Serializable {
-
-    @Id
-    @Type(type = "uuid-char")
-    private UUID id;
+public class Player extends User implements Serializable {
 
     @NotBlank
     @Column(unique = true)
@@ -42,36 +37,20 @@ public class Player implements Serializable {
     private Gender gender;
 
     @Embedded
-    private GamePreferences preferences;
+    protected Preferences preferences;
 
     public Player() {
-        id = UUID.randomUUID();
+        super(EntityType.PLAYER);
     }
 
     public Player(PlayerDTO playerDTO) {
-        id = UUID.randomUUID();
+        super(EntityType.PLAYER);
         this.nickname = playerDTO.getNickname();
         this.fullname = playerDTO.getFullname();
         this.email = playerDTO.getEmail();
         this.birthday = playerDTO.getBirthday();
         this.gender = Gender.valueOf(playerDTO.getGender());
-        this.preferences = new GamePreferences(playerDTO.getPreferences());
-    }
-
-    public Player(String nickname, String fullname, String email,
-                  LocalDate birthday, Gender gender,
-                  GamePreferences gamePreferences) {
-        id = UUID.randomUUID();
-        this.nickname = nickname;
-        this.fullname = fullname;
-        this.email = email;
-        this.birthday = birthday;
-        this.gender = gender;
-        this.preferences = gamePreferences;
-    }
-
-    public UUID getId() {
-        return id;
+        this.preferences = new Preferences(playerDTO.getPreferences());
     }
 
     public String getNickname() {
@@ -80,6 +59,14 @@ public class Player implements Serializable {
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     public String getFullname() {
@@ -106,11 +93,11 @@ public class Player implements Serializable {
         this.gender = gender;
     }
 
-    public GamePreferences getPreferences() {
+    public Preferences getPreferences() {
         return preferences;
     }
 
-    public void setPreferences(GamePreferences preferences) {
+    public void setPreferences(Preferences preferences) {
         this.preferences = preferences;
     }
 
@@ -120,7 +107,7 @@ public class Player implements Serializable {
         this.email = playerDTO.getEmail();
         this.birthday = playerDTO.getBirthday();
         this.gender = Gender.valueOf(playerDTO.getGender());
-        this.preferences = new GamePreferences(playerDTO.getPreferences());
+        this.preferences = new Preferences(playerDTO.getPreferences());
     }
 
     public PlayerDTO toDTO() {

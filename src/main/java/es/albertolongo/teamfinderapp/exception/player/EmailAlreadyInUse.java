@@ -1,4 +1,4 @@
-package es.albertolongo.teamfinderapp.exception;
+package es.albertolongo.teamfinderapp.exception.player;
 
 public class EmailAlreadyInUse extends RuntimeException{
 

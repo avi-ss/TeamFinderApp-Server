@@ -1,7 +1,7 @@
 package es.albertolongo.teamfinderapp.model.entity;
 
 import es.albertolongo.teamfinderapp.model.dto.TeamDTO;
-import org.hibernate.annotations.Type;
+import es.albertolongo.teamfinderapp.model.enums.EntityType;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -12,11 +12,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Entity
-public class Team implements Serializable {
-
-    @Id
-    @Type(type = "uuid-char")
-    private UUID id;
+public class Team extends User implements Serializable {
 
     @OneToOne(cascade = CascadeType.ALL)
     private Player founder;
@@ -25,22 +21,14 @@ public class Team implements Serializable {
     @JoinTable()
     private Set<Player> members = new HashSet<>();
 
-    @Embedded
-    private GamePreferences preferences;
-
     public Team() {
-        id = UUID.randomUUID();
+        super(EntityType.TEAM);
     }
 
-    public Team(Player founder, Set<Player> members, GamePreferences preferences) {
-        id = UUID.randomUUID();
+    public Team(Player founder, Set<Player> members) {
+        super(EntityType.TEAM);
         this.founder = founder;
         this.members = members;
-        this.preferences = preferences;
-    }
-
-    public UUID getId() {
-        return id;
     }
 
     public Player getFounder() {
@@ -59,15 +47,7 @@ public class Team implements Serializable {
         this.members = members;
     }
 
-    public GamePreferences getPreferences() {
-        return preferences;
-    }
-
-    public void setPreferences(GamePreferences preferences) {
-        this.preferences = preferences;
-    }
-
-    public TeamDTO toDTO(){
+    public TeamDTO teamDTO(){
 
         TeamDTO teamDTO = new TeamDTO();
         Set<UUID> dtoMembers = members.stream()
@@ -77,7 +57,6 @@ public class Team implements Serializable {
         teamDTO.setId(id);
         teamDTO.setFounder(founder.getId());
         teamDTO.setMembers(dtoMembers);
-        teamDTO.setPreferences(preferences.toDTO());
 
         return teamDTO;
     }

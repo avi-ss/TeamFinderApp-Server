@@ -1,8 +1,9 @@
 package es.albertolongo.teamfinderapp.rest;
 
 import es.albertolongo.teamfinderapp.api.PlayerApi;
-import es.albertolongo.teamfinderapp.exception.EmailAlreadyInUse;
-import es.albertolongo.teamfinderapp.exception.NicknameAlreadyInUse;
+import es.albertolongo.teamfinderapp.exception.player.EmailAlreadyInUse;
+import es.albertolongo.teamfinderapp.exception.player.NicknameAlreadyInUse;
+import es.albertolongo.teamfinderapp.exception.player.PlayerNotFound;
 import es.albertolongo.teamfinderapp.model.dto.PlayerDTO;
 import es.albertolongo.teamfinderapp.model.entity.Player;
 import es.albertolongo.teamfinderapp.service.PlayerService;
@@ -36,50 +37,34 @@ public class PlayerRestController implements PlayerApi {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
-    @ExceptionHandler(RuntimeException.class)
+    @ExceptionHandler(PlayerNotFound.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<String> handlerRuntimeExceptions(RuntimeException e) {
+    public ResponseEntity<String> handlerPlayerNotFound(RuntimeException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
     @Override
     public ResponseEntity<UUID> playerPost(PlayerDTO playerDTO) {
-        try {
-            UUID id = playerService.registerPlayer(playerDTO);
-            return ResponseEntity.status(HttpStatus.OK).body(id);
-        } catch (EmailAlreadyInUse | NicknameAlreadyInUse e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        UUID id = playerService.registerPlayer(playerDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(id);
     }
 
     @Override
     public ResponseEntity<PlayerDTO> playerPlayerIdGet(UUID playerId) {
-        try {
-            Player player = playerService.getPlayer(playerId);
-            return ResponseEntity.status(HttpStatus.OK).body(player.toDTO());
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        Player player = playerService.getPlayer(playerId);
+        return ResponseEntity.status(HttpStatus.OK).body(player.toDTO());
     }
 
     @Override
     public ResponseEntity<PlayerDTO> playerPlayerIdPut(UUID playerId, PlayerDTO playerDTO) {
-        try {
-            Player player = playerService.modifyPlayer(playerId, playerDTO);
-            return ResponseEntity.status(HttpStatus.OK).body(player.toDTO());
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        Player player = playerService.modifyPlayer(playerId, playerDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(player.toDTO());
     }
 
     @Override
     public ResponseEntity<Void> playerPlayerIdDelete(UUID playerId) {
-        try {
-            playerService.deletePlayer(playerId);
-            return ResponseEntity.status(HttpStatus.OK).build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        playerService.deletePlayer(playerId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 }

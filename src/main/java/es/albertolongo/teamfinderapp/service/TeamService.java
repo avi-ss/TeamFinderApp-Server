@@ -1,10 +1,8 @@
 package es.albertolongo.teamfinderapp.service;
 
-import es.albertolongo.teamfinderapp.api.PlayerApi;
-import es.albertolongo.teamfinderapp.api.TeamApi;
-import es.albertolongo.teamfinderapp.model.dto.GamePreferencesDTO;
+import es.albertolongo.teamfinderapp.exception.player.PlayerNotFound;
+import es.albertolongo.teamfinderapp.exception.team.*;
 import es.albertolongo.teamfinderapp.model.dto.TeamDTO;
-import es.albertolongo.teamfinderapp.model.entity.GamePreferences;
 import es.albertolongo.teamfinderapp.model.entity.Player;
 import es.albertolongo.teamfinderapp.model.entity.Team;
 import es.albertolongo.teamfinderapp.model.enums.Action;
@@ -40,31 +38,40 @@ public class TeamService {
         Team team = new Team();
 
         Optional<Player> founder = playerRepository.findById(teamDTO.getFounder());
-        Iterable<Player> members = playerRepository.findAllById(teamDTO.getMembers());
 
+        if (!founder.isPresent()) {
+            throw new PlayerNotFound("Founder not found");
+        }
+
+        Iterable<Player> members = playerRepository.findAllById(teamDTO.getMembers());
         Set<Player> membersSet = StreamSupport.stream(members.spliterator(),
                 false).collect(Collectors.toSet());
 
-        if (founder.isPresent() && membersSet.contains(founder.get())) {
-            team.setFounder(founder.get());
-            team.setMembers(membersSet);
-            team.setPreferences(new GamePreferences(teamDTO.getPreferences()));
-
-            return teamRepository.save(team).getId();
-        } else {
-            throw new RuntimeException();
+        if (membersSet.isEmpty() || !membersSet.contains(founder.get())) {
+            throw new InvalidTeam("Members cannot be empty or without founder");
         }
+
+        Optional<Team> byFounder = teamRepository.findByFounder(founder.get());
+
+        if (byFounder.isPresent()) {
+            throw new MemberAlreadyInTeam("Founder is in other team");
+        }
+
+        team.setFounder(founder.get());
+        team.setMembers(membersSet);
+
+        return teamRepository.save(team).getId();
     }
 
     public Team getTeam(@NotNull UUID id) {
 
         Optional<Team> team = teamRepository.findById(id);
 
-        if (team.isPresent()) {
-            return team.get();
-        } else {
-            throw new RuntimeException();
+        if (!team.isPresent()) {
+            throw new TeamNotFound("Team not found");
         }
+
+        return team.get();
     }
 
     public Team modifyTeamMember(@NotNull UUID teamId, @NotNull UUID playerId, String actionStr) {
@@ -72,73 +79,67 @@ public class TeamService {
         Optional<Team> team = teamRepository.findById(teamId);
         Optional<Player> player = playerRepository.findById(playerId);
 
-        if (team.isPresent() && player.isPresent()) {
-            Action action = Action.valueOf(actionStr.toUpperCase());
-            Set<Player> members = team.get().getMembers();
-            switch (action) {
-                case ADD -> {
-                    // Si no equipo no contiene el miembro, lo añade
-                    if (!members.contains(player.get())) {
-                        team.get().getMembers().add(player.get());
-                    } else {
-                        throw new ConstraintViolationException(new HashSet<ConstraintViolation<?>>());
-                    }
-                }
-                case REMOVE -> {
-                    // Si el equipo contiene el miembro, lo elimina
-                    if (members.contains(player.get())) {
+        if (!team.isPresent()) {
+            throw new TeamNotFound("Team not found");
+        }
 
-                        team.get().getMembers().remove(player.get());
-                        // Si el fundador era el miembro eliminado, coge el primero
-                        if (team.get().getFounder().equals(player.get())) {
+        if (!player.isPresent()) {
+            throw new PlayerNotFound("Player not found");
+        }
 
-                            Optional<Player> first = team.get().getMembers().stream().findFirst();
-                            // Si hay primero, se pone de fundador
-                            if (first.isPresent()) {
-                                team.get().setFounder(first.get());
-                            } else {
-                                throw new ConstraintViolationException(new HashSet<ConstraintViolation<?>>());
-                            }
-                        }
-                    } else {
-                        throw new ConstraintViolationException(new HashSet<ConstraintViolation<?>>());
-                    }
+        Action action;
+        try {
+            action = Action.valueOf(actionStr.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new ConstraintViolationException(new HashSet<ConstraintViolation<?>>());
+        }
+
+        Set<Player> members = team.get().getMembers();
+        switch (action) {
+            case ADD -> {
+                if (members.contains(player.get())) {
+                    throw new MemberAlreadyInTeam("Member already in team");
                 }
-                case PROMOTE -> {
-                    // Si el equipo contiene el miembro, se asciende
-                    if (members.contains(player.get())) {
-                        team.get().setFounder(player.get());
-                    } else {
-                        throw new ConstraintViolationException(new HashSet<ConstraintViolation<?>>());
-                    }
+
+                team.get().getMembers().add(player.get());
+            }
+            case REMOVE -> {
+
+                if (!members.contains(player.get())) {
+                    throw new MemberNotInTeam("Member not in team");
                 }
-                default -> {
-                    throw new RuntimeException();
+
+                if (members.size() < 2) {
+                    throw new MemberNumberIsLow("Cannot delete member when there is only one left");
+                }
+
+                team.get().getMembers().remove(player.get());
+
+                if (team.get().getFounder().equals(player.get())) {
+                    Optional<Player> first = team.get().getMembers().stream().findFirst();
+
+                    if (!first.isPresent()) {
+                        throw new MemberNumberIsLow("This shouldn't be happening");
+                    }
+
+                    team.get().setFounder(first.get());
                 }
             }
-            return teamRepository.save(team.get());
-        } else {
-            throw new RuntimeException();
+            case PROMOTE -> {
+                if (!members.contains(player.get())) {
+                    throw new MemberNotInTeam("Member not in team");
+                }
+                team.get().setFounder(player.get());
+            }
         }
-    }
-
-    public Team modifyTeamPreferences(@NotNull UUID id, @NotNull @Valid GamePreferencesDTO gamePreferencesDTO) {
-
-        Optional<Team> team = teamRepository.findById(id);
-
-        if (team.isPresent()) {
-            team.get().setPreferences(new GamePreferences(gamePreferencesDTO));
-            return teamRepository.save(team.get());
-        } else {
-            throw new RuntimeException();
-        }
+        return teamRepository.save(team.get());
     }
 
     public void deleteTeam(@NotNull UUID id) {
-        if (teamRepository.existsById(id)) {
-            teamRepository.deleteById(id);
-        } else {
-            throw new RuntimeException();
+
+        if (!teamRepository.existsById(id)) {
+            throw new TeamNotFound("Team not found");
         }
+        teamRepository.deleteById(id);
     }
 }

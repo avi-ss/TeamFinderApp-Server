@@ -1,7 +1,8 @@
 package es.albertolongo.teamfinderapp.rest;
 
 import es.albertolongo.teamfinderapp.api.TeamApi;
-import es.albertolongo.teamfinderapp.model.dto.GamePreferencesDTO;
+import es.albertolongo.teamfinderapp.exception.player.PlayerNotFound;
+import es.albertolongo.teamfinderapp.exception.team.*;
 import es.albertolongo.teamfinderapp.model.dto.TeamDTO;
 import es.albertolongo.teamfinderapp.model.entity.Team;
 import es.albertolongo.teamfinderapp.service.TeamService;
@@ -29,60 +30,41 @@ public class TeamRestController implements TeamApi {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
-    @ExceptionHandler(RuntimeException.class)
+    @ExceptionHandler({PlayerNotFound.class, TeamNotFound.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<String> handlerRuntimeExceptions(RuntimeException e) {
+    public ResponseEntity<String> handlerNotFound(RuntimeException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler({InvalidTeam.class, MemberAlreadyInTeam.class,
+            MemberNotInTeam.class, MemberNumberIsLow.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<String> handlerTeamExceptions(RuntimeException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
     @Override
     public ResponseEntity<UUID> teamPost(TeamDTO teamDTO) {
-        try {
-            UUID id = teamService.registerTeam(teamDTO);
-            return ResponseEntity.status(HttpStatus.OK).body(id);
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        UUID id = teamService.registerTeam(teamDTO);
+        return ResponseEntity.status(HttpStatus.OK).body(id);
     }
 
     @Override
     public ResponseEntity<TeamDTO> teamTeamIdGet(UUID teamId) {
-        try {
-            Team team = teamService.getTeam(teamId);
-            return ResponseEntity.status(HttpStatus.OK).body(team.toDTO());
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-    }
-
-    @Override
-    public ResponseEntity<TeamDTO> teamTeamIdPatch(UUID teamId, GamePreferencesDTO gamePreferencesDTO) {
-        try {
-            Team team = teamService.modifyTeamPreferences(teamId, gamePreferencesDTO);
-            return ResponseEntity.status(HttpStatus.OK).body(team.toDTO());
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        Team team = teamService.getTeam(teamId);
+        return ResponseEntity.status(HttpStatus.OK).body(team.teamDTO());
     }
 
     @Override
     public ResponseEntity<TeamDTO> teamTeamIdPlayerIdPatch(UUID teamId, UUID playerId, String action) {
-        try {
-            Team team = teamService.modifyTeamMember(teamId, playerId, action);
-            return ResponseEntity.status(HttpStatus.OK).body(team.toDTO());
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        Team team = teamService.modifyTeamMember(teamId, playerId, action);
+        return ResponseEntity.status(HttpStatus.OK).body(team.teamDTO());
     }
 
     @Override
     public ResponseEntity<Void> teamTeamIdDelete(UUID teamId) {
-        try {
-            teamService.deleteTeam(teamId);
-            return ResponseEntity.status(HttpStatus.OK).build();
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
+        teamService.deleteTeam(teamId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
 
