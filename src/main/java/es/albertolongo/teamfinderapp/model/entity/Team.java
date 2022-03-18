@@ -1,7 +1,9 @@
 package es.albertolongo.teamfinderapp.model.entity;
 
 import es.albertolongo.teamfinderapp.model.dto.TeamDTO;
+import org.hibernate.annotations.Type;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
@@ -9,10 +11,21 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Entity
 public class Team implements Serializable {
+
+    @Id
+    @Type(type = "uuid-char")
     private UUID id;
+
+    @OneToOne(cascade = CascadeType.ALL)
     private Player founder;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinTable()
     private Set<Player> members = new HashSet<>();
+
+    @Embedded
     private GamePreferences preferences;
 
     public Team() {

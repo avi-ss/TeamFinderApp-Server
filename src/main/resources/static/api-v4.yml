@@ -1,0 +1,355 @@
+openapi: 3.0.0
+info:
+  title: Team Finder App
+  description: >-
+    Esta API se encarga de gestionar la información de la base de datos
+    relacionada con la aplicacion Team Finder App.
+  version: 1.0.0
+  contact:
+    email: alg00073@red.ujaen.es
+tags:
+  - name: player
+    description: Esta entidad almacena información y operaciones sobre los jugadores
+  - name: team
+    description: Agregación de jugadores que contiene información sobre cada equipo
+  - name: like
+    description: Cada like almacena los likes enviados de cada entidad
+paths:
+  /player:
+    post:
+      tags:
+        - player
+      summary: Operación de registro de un nuevo jugador
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/playerDTO'
+        required: true
+      responses:
+        '200':
+          description: Okay. El jugador fue registrado satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/entityId'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+  /player/{playerId}:
+    get:
+      tags:
+        - player
+      summary: Obtiene la información de un jugador en específico
+      parameters:
+        - $ref: '#/components/parameters/playerId'
+      responses:
+        '200':
+          description: Okay. El jugador fue encontrado y devuelto satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/playerDTO'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - player
+      summary: Operación para modificar un jugador ya registrado
+      parameters:
+        - $ref: '#/components/parameters/playerId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/playerDTO'
+        required: true
+      responses:
+        '200':
+          description: Okay. El jugador fue modificado satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/playerDTO'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - player
+      summary: Operación para borrar un jugador ya registrado
+      parameters:
+        - $ref: '#/components/parameters/playerId'
+      responses:
+        '200':
+          description: Okay. El jugador fue eliminado satisfactoriamente
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /team:
+    post:
+      tags:
+        - team
+      summary: Operación de registro de un nuevo equipo
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/teamDTO'
+        required: true
+      responses:
+        '200':
+          description: Okay. El equipo fue registrado satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/entityId'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /team/{teamId}:
+    get:
+      tags:
+        - team
+      summary: Obtiene la información de un equipo en específico
+      parameters:
+        - $ref: '#/components/parameters/teamId'
+      responses:
+        '200':
+          description: Okay. El equipo fue encontrado y devuelto satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/teamDTO'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    patch:
+      tags:
+        - team
+      summary: >-
+        Operación para modificar las preferencias del equipo
+      parameters:
+        - $ref: '#/components/parameters/teamId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/gamePreferencesDTO'
+        required: true
+      responses:
+        '200':
+          description: Okay. Las preferencias del equipo fueron modificadas satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/teamDTO'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - team
+      summary: Operación para borrar un equipo ya registrado
+      parameters:
+        - $ref: '#/components/parameters/teamId'
+      responses:
+        '200':
+          description: Okay. El equipo fue eliminado satisfactoriamente
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /team/{teamId}/{playerId}:
+    patch:
+      tags:
+        - team
+      summary: >-
+        Operación para añadir/eliminar/ascender un miembro del equipo
+      parameters:
+        - $ref: '#/components/parameters/teamId'
+        - $ref: '#/components/parameters/playerId'
+        - $ref: '#/components/parameters/action'
+      responses:
+        '200':
+          description: Okay. El jugador del equipo fue modificado satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/teamDTO'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /like/{entityId}:
+    put:
+      tags:
+        - like
+      summary: Operación para crear un like entre un equipo y un jugador o viceversa
+      parameters:
+        - $ref: '#/components/parameters/entityId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: string
+              format: uuid
+              description: Id correspondiente a la entidad que recibirá un like'
+      responses:
+        '200':
+          description: Okay. El like fue registrado satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/entityId'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    get:
+      tags:
+        - like
+      summary: Obtiene la información de un like en específico
+      parameters:
+        - $ref: '#/components/parameters/entityId'
+      responses:
+        '200':
+          description: Okay. El like fue encontrado y devuelto satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/likeDTO'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  responses:
+    BadRequest:
+      description: Los datos enviados son incorrectos o hay campos obligatorios no enviados
+    NotFound:
+      description: No se encontro la información requerida
+  parameters:
+    playerId:
+      name: playerId
+      in: path
+      description: Identificador del jugador
+      required: true
+      schema:
+        type: string
+        format: uuid
+    teamId:
+      name: teamId
+      in: path
+      description: Identificador del equipo
+      required: true
+      schema:
+        type: string
+        format: uuid
+    action:
+      name: action
+      in: query
+      description: Parámetro que describe la acción a realizar sobre el jugador del equipo
+      required: true
+      schema:
+        type: string
+        enum: [promote, add, remove]
+    entityId:
+      name: entityId
+      in: path
+      description: Identificador de una entidad, ya sea equipo o jugador
+      required: true
+      schema:
+        type: string
+        format: uuid
+  schemas:
+    playerDTO:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/entityId'
+        nickname:
+          type: string
+          description: Apodo del jugador
+        email:
+          type: string
+          format: email
+          pattern: \\.[Ii][Oo]$
+          description: Email del jugador
+        fullname:
+          type: string
+          description: Nombre completo del jugador
+        birthday:
+          type: string
+          format: date
+          example: "2021-01-30"
+          description: Fecha de nacimiento del jugador
+        gender:
+          type: string
+          description: Género del jugador
+        preferences:
+          $ref: '#/components/schemas/gamePreferencesDTO'
+    teamDTO:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/entityId'
+        founder:
+          type: string
+          format: uuid
+          description: Identificador del fundador del equipo
+        members:
+          type: array
+          description: Lista de identificadores de los miembros del equipo
+          items:
+            $ref: '#/components/schemas/entityId'
+          minItems: 1
+          maxItems: 5
+          uniqueItems: true
+        preferences:
+          $ref: '#/components/schemas/gamePreferencesDTO'
+    gamePreferencesDTO:
+      type: object
+      properties:
+        game:
+          type: string
+          description: Juego favorito del jugador
+        rank:
+          type: string
+          description: Rango del jugador dentro del juego
+        role:
+          type: string
+          description: Rol del jugador dentro del juego
+        feminine:
+          type: boolean
+          description: >-
+            Denota la preferencia de solo visualizar equipos o jugadoras
+            femeninas. Esta opción solo se tiene en cuenta si el género del
+            jugador o del equipo completo es femenino
+    likeDTO:
+      type: object
+      properties:
+        entityId:
+          type: string
+          format: uuid
+          description: Id correspondiente a una entidad, ya sea equipo o jugador
+        likedEntities:
+          type: array
+          description: >-
+            Lista de identificadores de las entidades que recibieron like por la
+            entidad
+          items:
+            $ref: '#/components/schemas/entityId'
+          minItems: 1
+          maxItems: 5
+          uniqueItems: true
+    entityId:
+      type: string
+      format: uuid
+      description: Id correspondiente a una entidad registrada en la aplicación

@@ -22,12 +22,14 @@ public class Player implements Serializable {
     private UUID id;
 
     @NotBlank
+    @Column(unique = true)
     private String nickname;
 
     @Pattern(
             regexp = "\\\\.[Ii][Oo]$"
     )
     @Email
+    @Column(unique = true)
     private String email;
 
     @NotBlank
@@ -110,6 +112,15 @@ public class Player implements Serializable {
 
     public void setPreferences(GamePreferences preferences) {
         this.preferences = preferences;
+    }
+
+    public void set(PlayerDTO playerDTO) {
+        this.nickname = playerDTO.getNickname();
+        this.fullname = playerDTO.getFullname();
+        this.email = playerDTO.getEmail();
+        this.birthday = playerDTO.getBirthday();
+        this.gender = Gender.valueOf(playerDTO.getGender());
+        this.preferences = new GamePreferences(playerDTO.getPreferences());
     }
 
     public PlayerDTO toDTO() {

@@ -20,7 +20,7 @@ public class GamePreferences implements Serializable {
         this.game = gamePreferencesDTO.getGame();
         this.role = gamePreferencesDTO.getRole();
         this.rank = gamePreferencesDTO.getRank();
-        this.onlyFeminine = gamePreferencesDTO.getOnlyFemenine();
+        this.onlyFeminine = gamePreferencesDTO.getFeminine();
     }
 
     public GamePreferences(String game, String role, String rank,
@@ -69,7 +69,7 @@ public class GamePreferences implements Serializable {
         gamePreferencesDTO.setGame(game);
         gamePreferencesDTO.setRank(rank);
         gamePreferencesDTO.setRole(role);
-        gamePreferencesDTO.setOnlyFemenine(onlyFeminine);
+        gamePreferencesDTO.setFeminine(onlyFeminine);
 
         return gamePreferencesDTO;
     }
