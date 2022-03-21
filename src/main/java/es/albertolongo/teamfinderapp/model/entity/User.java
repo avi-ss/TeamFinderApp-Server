@@ -22,7 +22,7 @@ public class User {
     @Enumerated(EnumType.STRING)
     EntityType entityType;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.EAGER)
     @JoinTable()
     protected Set<User> likedEntities = new HashSet<>();
 
@@ -60,7 +60,7 @@ public class User {
         UserDTO userDTO = new UserDTO();
 
         userDTO.setId(id);
-        userDTO.setEntityType(UserDTO.EntityTypeEnum.fromValue(entityType.toString()));
+        userDTO.setEntityType(UserDTO.EntityTypeEnum.valueOf(entityType.toString()));
 
         Set<UUID> liked = likedEntities.stream()
                 .map(id -> id.getId())

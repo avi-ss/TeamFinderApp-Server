@@ -12,6 +12,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Entity
+@PrimaryKeyJoinColumn()
 public class Team extends User implements Serializable {
 
     @OneToOne(cascade = CascadeType.ALL)

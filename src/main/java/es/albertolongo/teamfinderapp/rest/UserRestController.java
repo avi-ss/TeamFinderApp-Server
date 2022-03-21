@@ -1,6 +1,7 @@
 package es.albertolongo.teamfinderapp.rest;
 
 import es.albertolongo.teamfinderapp.api.UserApi;
+import es.albertolongo.teamfinderapp.exception.user.InvalidLikedEntity;
 import es.albertolongo.teamfinderapp.exception.user.UserNotFound;
 import es.albertolongo.teamfinderapp.model.dto.UserDTO;
 import es.albertolongo.teamfinderapp.model.entity.User;
@@ -32,6 +33,12 @@ public class UserRestController implements UserApi {
     @ExceptionHandler(UserNotFound.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ResponseEntity<String> handlerNotFound(RuntimeException e) {
+        return ResponseEntity.badRequest().body(e.getMessage());
+    }
+
+    @ExceptionHandler(InvalidLikedEntity.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<String> handlerUserExceptions(RuntimeException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 

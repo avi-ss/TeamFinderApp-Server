@@ -14,6 +14,7 @@ import java.time.LocalDate;
 import java.util.Objects;
 
 @Entity
+@PrimaryKeyJoinColumn()
 public class Player extends User implements Serializable {
 
     @NotBlank
