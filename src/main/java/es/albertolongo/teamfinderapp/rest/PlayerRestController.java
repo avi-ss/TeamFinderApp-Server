@@ -1,6 +1,9 @@
 package es.albertolongo.teamfinderapp.rest;
 
 import es.albertolongo.teamfinderapp.api.PlayerApi;
+import es.albertolongo.teamfinderapp.exception.game.GameNotFound;
+import es.albertolongo.teamfinderapp.exception.game.RankNotFound;
+import es.albertolongo.teamfinderapp.exception.game.RoleNotFound;
 import es.albertolongo.teamfinderapp.exception.player.EmailAlreadyInUse;
 import es.albertolongo.teamfinderapp.exception.player.NicknameAlreadyInUse;
 import es.albertolongo.teamfinderapp.exception.player.PlayerNotFound;
@@ -37,34 +40,34 @@ public class PlayerRestController implements PlayerApi {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
-    @ExceptionHandler(PlayerNotFound.class)
+    @ExceptionHandler({PlayerNotFound.class, GameNotFound.class,
+            RankNotFound.class, RoleNotFound.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<String> handlerPlayerNotFound(RuntimeException e) {
+    public ResponseEntity<String> handlerNotFound(RuntimeException e) {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
     @Override
-    public ResponseEntity<UUID> playerPost(PlayerDTO playerDTO) {
+    public ResponseEntity<UUID> addPlayer(PlayerDTO playerDTO) {
         UUID id = playerService.registerPlayer(playerDTO);
         return ResponseEntity.status(HttpStatus.OK).body(id);
     }
 
     @Override
-    public ResponseEntity<PlayerDTO> playerPlayerIdGet(UUID playerId) {
+    public ResponseEntity<PlayerDTO> getPlayerById(UUID playerId) {
         Player player = playerService.getPlayer(playerId);
         return ResponseEntity.status(HttpStatus.OK).body(player.toDTO());
     }
 
     @Override
-    public ResponseEntity<PlayerDTO> playerPlayerIdPut(UUID playerId, PlayerDTO playerDTO) {
+    public ResponseEntity<PlayerDTO> modifyPlayer(UUID playerId, PlayerDTO playerDTO) {
         Player player = playerService.modifyPlayer(playerId, playerDTO);
         return ResponseEntity.status(HttpStatus.OK).body(player.toDTO());
     }
 
     @Override
-    public ResponseEntity<Void> playerPlayerIdDelete(UUID playerId) {
+    public ResponseEntity<Void> deletePlayer(UUID playerId) {
         playerService.deletePlayer(playerId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
-
 }

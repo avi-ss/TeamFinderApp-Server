@@ -43,13 +43,13 @@ public class UserRestController implements UserApi {
     }
 
     @Override
-    public ResponseEntity<UserDTO> userUserIdGet(UUID userId) {
+    public ResponseEntity<UserDTO> getUserById(UUID userId) {
         User user = userService.getUser(userId);
         return ResponseEntity.status(HttpStatus.OK).body(user.userDTO());
     }
 
     @Override
-    public ResponseEntity<UserDTO> userUserIdLikedIdPatch(UUID userId, UUID likedId) {
+    public ResponseEntity<UserDTO> addLikeToUser(UUID userId, UUID likedId) {
         User user = userService.addLike(userId, likedId);
         return ResponseEntity.status(HttpStatus.OK).body(user.userDTO());
     }

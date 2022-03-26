@@ -48,7 +48,7 @@ public class Team extends User implements Serializable {
         this.members = members;
     }
 
-    public TeamDTO teamDTO(){
+    public TeamDTO toDTO(){
 
         TeamDTO teamDTO = new TeamDTO();
         Set<UUID> dtoMembers = members.stream()

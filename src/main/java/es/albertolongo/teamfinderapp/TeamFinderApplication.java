@@ -1,5 +1,9 @@
 package es.albertolongo.teamfinderapp;
 
+import es.albertolongo.teamfinderapp.model.dto.GameDTO;
+import es.albertolongo.teamfinderapp.model.dto.RankDTO;
+import es.albertolongo.teamfinderapp.model.dto.RoleDTO;
+import es.albertolongo.teamfinderapp.service.GameService;
 import es.albertolongo.teamfinderapp.service.PlayerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +18,9 @@ public class TeamFinderApplication implements CommandLineRunner {
     @Autowired
     PlayerService playerService;
 
+    @Autowired
+    GameService gameService;
+
     private static Logger LOG = LoggerFactory
             .getLogger(TeamFinderApplication.class);
 
@@ -23,6 +30,13 @@ public class TeamFinderApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        LOG.info("Mensaje de prueba");
+        LOG.info("Inicializando juego de prueba");
+        GameDTO gameDTO = new GameDTO().name("League of Legends");
+
+        RoleDTO roleDTO = new RoleDTO().name("Mid");
+        RankDTO rankDTO = new RankDTO().name("Hierro 1").value(1);
+
+        gameDTO.getRoles().add(roleDTO);
+        gameDTO.getRanks().add(rankDTO);
     }
 }

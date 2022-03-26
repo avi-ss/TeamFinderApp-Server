@@ -44,14 +44,14 @@ public class Player extends User implements Serializable {
         super(EntityType.PLAYER);
     }
 
-    public Player(PlayerDTO playerDTO) {
+    public Player(PlayerDTO playerDTO, Preferences preferences) {
         super(EntityType.PLAYER);
         this.nickname = playerDTO.getNickname();
         this.fullname = playerDTO.getFullname();
         this.email = playerDTO.getEmail();
         this.birthday = playerDTO.getBirthday();
         this.gender = Gender.valueOf(playerDTO.getGender());
-        this.preferences = new Preferences(playerDTO.getPreferences());
+        this.preferences = preferences;
     }
 
     public String getNickname() {
@@ -102,13 +102,13 @@ public class Player extends User implements Serializable {
         this.preferences = preferences;
     }
 
-    public void set(PlayerDTO playerDTO) {
+    public void set(PlayerDTO playerDTO, Preferences preferences) {
         this.nickname = playerDTO.getNickname();
         this.fullname = playerDTO.getFullname();
         this.email = playerDTO.getEmail();
         this.birthday = playerDTO.getBirthday();
         this.gender = Gender.valueOf(playerDTO.getGender());
-        this.preferences = new Preferences(playerDTO.getPreferences());
+        this.preferences = preferences;
     }
 
     public PlayerDTO toDTO() {

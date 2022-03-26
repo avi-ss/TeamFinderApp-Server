@@ -3,27 +3,26 @@ package es.albertolongo.teamfinderapp.model.entity;
 import es.albertolongo.teamfinderapp.model.dto.PreferencesDTO;
 
 import javax.persistence.Embeddable;
+import javax.persistence.ManyToOne;
 import java.io.Serializable;
 
 @Embeddable
 public class Preferences implements Serializable {
 
-    private String game;
-    private String role;
-    private String rank;
+    @ManyToOne(optional = false)
+    private Game game;
+
+    @ManyToOne(optional = false)
+    private Role role;
+
+    @ManyToOne(optional = false)
+    private Rank rank;
     private boolean onlyFeminine;
 
     public Preferences() {
     }
 
-    public Preferences(PreferencesDTO preferencesDTO){
-        this.game = preferencesDTO.getGame();
-        this.role = preferencesDTO.getRole();
-        this.rank = preferencesDTO.getRank();
-        this.onlyFeminine = preferencesDTO.getFeminine();
-    }
-
-    public Preferences(String game, String role, String rank,
+    public Preferences(Game game, Role role, Rank rank,
                        boolean onlyFeminine) {
         this.game = game;
         this.role = role;
@@ -31,27 +30,27 @@ public class Preferences implements Serializable {
         this.onlyFeminine = onlyFeminine;
     }
 
-    public String getGame() {
+    public Game getGame() {
         return game;
     }
 
-    public void setGame(String game) {
+    public void setGame(Game game) {
         this.game = game;
     }
 
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 
-    public void setRole(String role) {
+    public void setRole(Role role) {
         this.role = role;
     }
 
-    public String getRank() {
+    public Rank getRank() {
         return rank;
     }
 
-    public void setRank(String rank) {
+    public void setRank(Rank rank) {
         this.rank = rank;
     }
 
@@ -66,9 +65,9 @@ public class Preferences implements Serializable {
     public PreferencesDTO toDTO(){
 
         PreferencesDTO preferencesDTO = new PreferencesDTO();
-        preferencesDTO.setGame(game);
-        preferencesDTO.setRank(rank);
-        preferencesDTO.setRole(role);
+        preferencesDTO.setGame(game.getName());
+        preferencesDTO.setRole(role.getRole());
+        preferencesDTO.setRank(rank.getRank());
         preferencesDTO.setFeminine(onlyFeminine);
 
         return preferencesDTO;

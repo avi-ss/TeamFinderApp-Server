@@ -1,10 +1,13 @@
 package es.albertolongo.teamfinderapp.service;
 
+import es.albertolongo.teamfinderapp.exception.game.RankNotFound;
+import es.albertolongo.teamfinderapp.exception.game.RoleNotFound;
 import es.albertolongo.teamfinderapp.exception.player.EmailAlreadyInUse;
 import es.albertolongo.teamfinderapp.exception.player.NicknameAlreadyInUse;
 import es.albertolongo.teamfinderapp.exception.player.PlayerNotFound;
 import es.albertolongo.teamfinderapp.model.dto.PlayerDTO;
-import es.albertolongo.teamfinderapp.model.entity.Player;
+import es.albertolongo.teamfinderapp.model.dto.PreferencesDTO;
+import es.albertolongo.teamfinderapp.model.entity.*;
 import es.albertolongo.teamfinderapp.repository.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,6 +25,9 @@ public class PlayerService {
     @Autowired
     PlayerRepository playerRepository;
 
+    @Autowired
+    GameService gameService;
+
     public PlayerService() {
     }
 
@@ -38,7 +44,9 @@ public class PlayerService {
             throw new NicknameAlreadyInUse("Nickname already in use");
         }
 
-        return playerRepository.save(new Player(playerDTO)).getId();
+        Preferences preferences = getPreferences(playerDTO.getPreferences());
+
+        return playerRepository.save(new Player(playerDTO, preferences)).getId();
     }
 
     public Player getPlayer(@NotNull UUID id) {
@@ -60,7 +68,9 @@ public class PlayerService {
             throw new PlayerNotFound("Player not found");
         }
 
-        player.get().set(playerDTO);
+        Preferences preferences = getPreferences(playerDTO.getPreferences());
+
+        player.get().set(playerDTO, preferences);
         return playerRepository.save(player.get());
     }
 
@@ -71,5 +81,28 @@ public class PlayerService {
         }
 
         playerRepository.deleteById(id);
+    }
+
+    private Preferences getPreferences(PreferencesDTO preferencesDTO) {
+
+        Game game = gameService.getGame(preferencesDTO.getGame());
+
+        Optional<Role> role = game.getRoles().stream()
+                .filter(r -> preferencesDTO.getRole().equals(r.getRole()))
+                .findAny();
+
+        if (!role.isPresent()) {
+            throw new RoleNotFound("Role not found");
+        }
+
+        Optional<Rank> rank = game.getRanks().stream()
+                .filter(r -> preferencesDTO.getRank().equals(r.getRank()))
+                .findAny();
+
+        if (!rank.isPresent()) {
+            throw new RankNotFound("Rank not found");
+        }
+
+        return new Preferences(game, role.get(), rank.get(), preferencesDTO.getFeminine());
     }
 }

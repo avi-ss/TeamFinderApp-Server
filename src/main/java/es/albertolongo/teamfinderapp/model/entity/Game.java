@@ -1,22 +1,42 @@
 package es.albertolongo.teamfinderapp.model.entity;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Objects;
+import es.albertolongo.teamfinderapp.model.dto.GameDTO;
+import es.albertolongo.teamfinderapp.model.dto.RankDTO;
+import es.albertolongo.teamfinderapp.model.dto.RoleDTO;
 
+import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Entity
 public class Game implements Serializable {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @NotBlank
     private String name;
-    private List<String> roles;
-    private List<String> ranks;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<Role> roles = new HashSet<>();
+
+    @OneToMany(cascade = CascadeType.ALL)
+    private Set<Rank> ranks = new HashSet<>();
 
     public Game() {
     }
 
-    public Game(String name, List<String> roles, List<String> ranks) {
+    public Game(String name) {
         this.name = name;
-        this.roles = roles;
-        this.ranks = ranks;
+    }
+
+    public Long getId() {
+        return id;
     }
 
     public String getName() {
@@ -27,20 +47,41 @@ public class Game implements Serializable {
         this.name = name;
     }
 
-    public List<String> getRoles() {
+    public Set<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(List<String> roles) {
+    public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
 
-    public List<String> getRanks() {
+    public Set<Rank> getRanks() {
         return ranks;
     }
 
-    public void setRanks(List<String> ranks) {
+    public void setRanks(Set<Rank> ranks) {
         this.ranks = ranks;
+    }
+
+    public GameDTO toDTO(){
+
+        GameDTO gameDTO = new GameDTO();
+
+        gameDTO.setId(id);
+        gameDTO.setName(name);
+
+        Set<RoleDTO> roleDTOS = roles.stream()
+                .map(role -> role.toDTO())
+                .collect(Collectors.toSet());
+
+        Set<RankDTO> rankDTOS = ranks.stream()
+                .map(rank -> rank.toDTO())
+                .collect(Collectors.toSet());
+
+        gameDTO.setRoles(roleDTOS);
+        gameDTO.setRanks(rankDTOS);
+
+        return gameDTO;
     }
 
     @Override

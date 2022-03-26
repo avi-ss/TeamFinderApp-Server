@@ -44,28 +44,38 @@ public class TeamRestController implements TeamApi {
     }
 
     @Override
-    public ResponseEntity<UUID> teamPost(TeamDTO teamDTO) {
+    public ResponseEntity<UUID> addTeam(TeamDTO teamDTO) {
         UUID id = teamService.registerTeam(teamDTO);
-        return ResponseEntity.status(HttpStatus.OK).body(id);
+        return ResponseEntity.ok(id);
     }
 
     @Override
-    public ResponseEntity<TeamDTO> teamTeamIdGet(UUID teamId) {
+    public ResponseEntity<TeamDTO> getTeamById(UUID teamId) {
         Team team = teamService.getTeam(teamId);
-        return ResponseEntity.status(HttpStatus.OK).body(team.teamDTO());
+        return ResponseEntity.ok(team.toDTO());
     }
 
     @Override
-    public ResponseEntity<TeamDTO> teamTeamIdPlayerIdPatch(UUID teamId, UUID playerId, String action) {
-        Team team = teamService.modifyTeamMember(teamId, playerId, action);
-        return ResponseEntity.status(HttpStatus.OK).body(team.teamDTO());
+    public ResponseEntity<TeamDTO> addMemberToTeam(UUID teamId, UUID playerId) {
+        Team team = teamService.addTeamMember(teamId, playerId);
+        return ResponseEntity.ok(team.toDTO());
     }
 
     @Override
-    public ResponseEntity<Void> teamTeamIdDelete(UUID teamId) {
+    public ResponseEntity<TeamDTO> promoteMemberOfTeam(UUID teamId, UUID playerId) {
+        Team team = teamService.promoteTeamMember(teamId, playerId);
+        return ResponseEntity.ok(team.toDTO());
+    }
+
+    @Override
+    public ResponseEntity<TeamDTO> deleteMemberOfTeam(UUID teamId, UUID playerId) {
+        Team team = teamService.deleteTeamMember(teamId, playerId);
+        return ResponseEntity.ok(team.toDTO());
+    }
+
+    @Override
+    public ResponseEntity<Void> deleteTeam(UUID teamId) {
         teamService.deleteTeam(teamId);
         return ResponseEntity.status(HttpStatus.OK).build();
     }
-
-
 }
