@@ -12,6 +12,9 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @SpringBootApplication
 public class TeamFinderApplication implements CommandLineRunner {
 
@@ -36,7 +39,12 @@ public class TeamFinderApplication implements CommandLineRunner {
         RoleDTO roleDTO = new RoleDTO().name("Mid");
         RankDTO rankDTO = new RankDTO().name("Hierro 1").value(1);
 
-        gameDTO.getRoles().add(roleDTO);
-        gameDTO.getRanks().add(rankDTO);
+        Set<RoleDTO> roles = new HashSet<>(); roles.add(roleDTO);
+        gameDTO.setRoles(roles);
+
+        Set<RankDTO> ranks = new HashSet<>(); ranks.add(rankDTO);
+        gameDTO.setRanks(ranks);
+
+        gameService.addGame(gameDTO);
     }
 }
