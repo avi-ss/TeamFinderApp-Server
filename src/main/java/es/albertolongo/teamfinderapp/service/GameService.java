@@ -23,6 +23,7 @@ import javax.validation.constraints.PositiveOrZero;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 @Validated
@@ -66,6 +67,15 @@ public class GameService {
         }
 
         return game.get();
+    }
+
+    public Set<Game> getAllGames(){
+        Iterable<Game> games = gameRepository.findAll();
+
+        Set<Game> gameSet = StreamSupport.stream(games.spliterator(), false)
+                .collect(Collectors.toSet());
+
+        return gameSet;
     }
 
     public Game getGame(@NotBlank String name){

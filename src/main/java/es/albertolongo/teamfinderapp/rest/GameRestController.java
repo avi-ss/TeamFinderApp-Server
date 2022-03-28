@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.ConstraintViolationException;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/")
@@ -52,6 +54,17 @@ public class GameRestController implements GameApi {
     public ResponseEntity<GameDTO> getGameById(Long gameId) {
         Game game = gameService.getGame(gameId);
         return ResponseEntity.ok(game.toDTO());
+    }
+
+    @Override
+    public ResponseEntity<Set<GameDTO>> getAllGames() {
+        Set<Game> games = gameService.getAllGames();
+
+        Set<GameDTO> gameDTOS = games.stream()
+                .map(game -> game.toDTO())
+                .collect(Collectors.toSet());
+
+        return ResponseEntity.ok(gameDTOS);
     }
 
     @Override

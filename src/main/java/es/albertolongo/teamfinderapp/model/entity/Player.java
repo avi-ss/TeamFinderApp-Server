@@ -3,6 +3,7 @@ package es.albertolongo.teamfinderapp.model.entity;
 import es.albertolongo.teamfinderapp.model.enums.EntityType;
 import es.albertolongo.teamfinderapp.model.enums.Gender;
 import es.albertolongo.teamfinderapp.model.dto.PlayerDTO;
+import es.albertolongo.teamfinderapp.util.CoderPassword;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -29,6 +30,9 @@ public class Player extends User implements Serializable {
     private String email;
 
     @NotBlank
+    String password;
+
+    @NotBlank
     private String fullname;
 
     @Past
@@ -46,12 +50,7 @@ public class Player extends User implements Serializable {
 
     public Player(PlayerDTO playerDTO, Preferences preferences) {
         super(EntityType.PLAYER);
-        this.nickname = playerDTO.getNickname();
-        this.fullname = playerDTO.getFullname();
-        this.email = playerDTO.getEmail();
-        this.birthday = playerDTO.getBirthday();
-        this.gender = Gender.valueOf(playerDTO.getGender());
-        this.preferences = preferences;
+        set(playerDTO, preferences);
     }
 
     public String getNickname() {
@@ -68,6 +67,10 @@ public class Player extends User implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public String getFullname() {
@@ -104,8 +107,9 @@ public class Player extends User implements Serializable {
 
     public void set(PlayerDTO playerDTO, Preferences preferences) {
         this.nickname = playerDTO.getNickname();
-        this.fullname = playerDTO.getFullname();
         this.email = playerDTO.getEmail();
+        this.password = CoderPassword.encode(playerDTO.getPassword());
+        this.fullname = playerDTO.getFullname();
         this.birthday = playerDTO.getBirthday();
         this.gender = Gender.valueOf(playerDTO.getGender());
         this.preferences = preferences;
