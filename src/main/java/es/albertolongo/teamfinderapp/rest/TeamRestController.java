@@ -15,7 +15,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.ConstraintViolationException;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/")
@@ -53,6 +55,15 @@ public class TeamRestController implements TeamApi {
     public ResponseEntity<TeamDTO> getTeamById(UUID teamId) {
         Team team = teamService.getTeam(teamId);
         return ResponseEntity.ok(team.toDTO());
+    }
+
+    @Override
+    public ResponseEntity<Set<TeamDTO>> getAllTeams() {
+        Set<Team> teams = teamService.getAllTeams();
+
+        Set<TeamDTO> teamDTOS = teams.stream().map(team -> team.toDTO()).collect(Collectors.toSet());
+
+        return ResponseEntity.ok(teamDTOS);
     }
 
     @Override

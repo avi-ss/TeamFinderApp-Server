@@ -14,9 +14,15 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 @Validated
@@ -45,11 +51,12 @@ public class PlayerService {
         }
 
         Preferences preferences = getPreferences(playerDTO.getPreferences());
+        Player player = new Player(playerDTO, preferences);
 
-        return playerRepository.save(new Player(playerDTO, preferences)).getId();
+        return registerPlayer(player).getId();
     }
 
-    public Player getPlayer(@NotNull UUID id) {
+    public Player getPlayerById(@NotNull UUID id) {
 
         Optional<Player> player = playerRepository.findById(id);
 
@@ -58,6 +65,33 @@ public class PlayerService {
         }
 
         return player.get();
+    }
+
+    public boolean checkPlayerWithNickname(@NotBlank String nickname) {
+        Optional<Player> player = playerRepository.findByNickname(nickname);
+
+        if (!player.isPresent()) {
+            return false;
+        }
+        return true;
+    }
+
+    public boolean checkPlayerWithEmail(@NotBlank @Pattern(regexp = "\\\\.[Ii][Oo]$") @Email String email) {
+        Optional<Player> player = playerRepository.findByEmail(email);
+
+        if (!player.isPresent()) {
+            return false;
+        }
+        return true;
+    }
+
+    public Set<Player> getAllPlayers() {
+
+        Iterable<Player> playersIt = playerRepository.findAll();
+
+        Set<Player> players = StreamSupport.stream(playersIt.spliterator(), false).collect(Collectors.toSet());
+
+        return players;
     }
 
     public Player modifyPlayer(@NotNull UUID id, @NotNull @Valid PlayerDTO playerDTO) {
@@ -69,9 +103,9 @@ public class PlayerService {
         }
 
         Preferences preferences = getPreferences(playerDTO.getPreferences());
-
         player.get().set(playerDTO, preferences);
-        return playerRepository.save(player.get());
+
+        return registerPlayer(player.get());
     }
 
     public void deletePlayer(@NotNull UUID id) {
@@ -81,6 +115,10 @@ public class PlayerService {
         }
 
         playerRepository.deleteById(id);
+    }
+
+    private Player registerPlayer(@NotNull @Valid Player player){
+        return playerRepository.save(player);
     }
 
     private Preferences getPreferences(PreferencesDTO preferencesDTO) {

@@ -13,13 +13,12 @@ import es.albertolongo.teamfinderapp.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.ConstraintViolationException;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/")
@@ -55,8 +54,29 @@ public class PlayerRestController implements PlayerApi {
 
     @Override
     public ResponseEntity<PlayerDTO> getPlayerById(UUID playerId) {
-        Player player = playerService.getPlayer(playerId);
+        Player player = playerService.getPlayerById(playerId);
         return ResponseEntity.status(HttpStatus.OK).body(player.toDTO());
+    }
+
+    @Override
+    public ResponseEntity<Boolean> checkPlayerWithEmail(String playerEmail) {
+        boolean response = playerService.checkPlayerWithEmail(playerEmail);
+        return ResponseEntity.ok(response);
+    }
+
+    @Override
+    public ResponseEntity<Boolean> checkPlayerWithNickname(String playerNickname) {
+        boolean response = playerService.checkPlayerWithNickname(playerNickname);
+        return ResponseEntity.ok(response);
+    }
+
+    @Override
+    public ResponseEntity<Set<PlayerDTO>> getAllPlayers() {
+        Set<Player> players = playerService.getAllPlayers();
+
+        Set<PlayerDTO> playerDTOS = players.stream().map(player -> player.toDTO()).collect(Collectors.toSet());
+
+        return ResponseEntity.ok(playerDTOS);
     }
 
     @Override

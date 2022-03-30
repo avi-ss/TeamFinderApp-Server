@@ -27,7 +27,7 @@ public class PlayerDataService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
-        Player player = playerService.getPlayer(UUID.fromString(id));
+        Player player = playerService.getPlayerById(UUID.fromString(id));
 
         return User.withUsername(player.getNickname())
                 .roles("PLAYER").password(player.getPassword())

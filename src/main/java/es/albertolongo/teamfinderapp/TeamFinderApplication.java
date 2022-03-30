@@ -33,18 +33,31 @@ public class TeamFinderApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        LOG.info("Inicializando juego de prueba");
-        GameDTO gameDTO = new GameDTO().name("League of Legends");
+        LOG.info("Inicializando juego de prueba: League of Legends");
+        GameDTO leagueDTO = new GameDTO().name("League of Legends");
 
-        RoleDTO roleDTO = new RoleDTO().name("Mid");
-        RankDTO rankDTO = new RankDTO().name("Hierro 1").value(1);
+        RoleDTO midDTO = new RoleDTO().name("Mid");
+        RankDTO ironDTO = new RankDTO().name("Hierro 1").value(1);
 
-        Set<RoleDTO> roles = new HashSet<>(); roles.add(roleDTO);
-        gameDTO.setRoles(roles);
+        Set<RoleDTO> leagueRoles = new HashSet<>(); leagueRoles.add(midDTO);
+        leagueDTO.setRoles(leagueRoles);
 
-        Set<RankDTO> ranks = new HashSet<>(); ranks.add(rankDTO);
-        gameDTO.setRanks(ranks);
+        Set<RankDTO> leagueRanks = new HashSet<>(); leagueRanks.add(ironDTO);
+        leagueDTO.setRanks(leagueRanks);
 
-        gameService.addGame(gameDTO);
+        LOG.info("Inicializando juego de prueba: VALORANT");
+        GameDTO valorantDTO = new GameDTO().name("VALORANT");
+
+        RoleDTO duelistDTO = new RoleDTO().name("Duelist");
+        RankDTO bronceDTO = new RankDTO().name("Bronce 1").value(1);
+
+        Set<RoleDTO> valorantRoles = new HashSet<>(); valorantRoles.add(duelistDTO);
+        valorantDTO.setRoles(valorantRoles);
+
+        Set<RankDTO> valorantRanks = new HashSet<>(); valorantRanks.add(bronceDTO);
+        valorantDTO.setRanks(valorantRanks);
+
+        gameService.addGame(leagueDTO);
+        gameService.addGame(valorantDTO);
     }
 }

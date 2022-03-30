@@ -111,7 +111,7 @@ public class Player extends User implements Serializable {
         this.password = CoderPassword.encode(playerDTO.getPassword());
         this.fullname = playerDTO.getFullname();
         this.birthday = playerDTO.getBirthday();
-        this.gender = Gender.valueOf(playerDTO.getGender());
+        this.gender = Gender.valueOf(playerDTO.getGender().toUpperCase());
         this.preferences = preferences;
     }
 

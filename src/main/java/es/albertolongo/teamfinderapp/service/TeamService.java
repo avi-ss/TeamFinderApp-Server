@@ -5,18 +5,17 @@ import es.albertolongo.teamfinderapp.exception.team.*;
 import es.albertolongo.teamfinderapp.model.dto.TeamDTO;
 import es.albertolongo.teamfinderapp.model.entity.Player;
 import es.albertolongo.teamfinderapp.model.entity.Team;
-import es.albertolongo.teamfinderapp.model.enums.Action;
 import es.albertolongo.teamfinderapp.repository.PlayerRepository;
 import es.albertolongo.teamfinderapp.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -72,6 +71,15 @@ public class TeamService {
         }
 
         return team.get();
+    }
+
+    public Set<Team> getAllTeams(){
+
+        Iterable<Team> teamsIt = teamRepository.findAll();
+
+        Set<Team> teams = StreamSupport.stream(teamsIt.spliterator(), false).collect(Collectors.toSet());
+
+        return teams;
     }
 
     public Team addTeamMember(@NotNull UUID teamId, @NotNull UUID playerId) {

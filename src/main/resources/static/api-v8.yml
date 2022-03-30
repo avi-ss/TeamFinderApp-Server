@@ -1,0 +1,655 @@
+openapi: 3.0.0
+info:
+  title: Team Finder App
+  description: >-
+    Esta API se encarga de gestionar la información de la base de datos
+    relacionada con la aplicacion Team Finder App.
+  version: 1.0.0
+  contact:
+    email: alg00073@red.ujaen.es
+tags:
+  - name: game
+    description: >-
+      Un juego almacena información y operaciones sobre sus rangos y roles
+      específicos
+  - name: user
+    description: >-
+      Un usuario es una entidad que guarda información genérica tanto de
+      jugadores como de equipos
+  - name: player
+    description: >-
+      Esta entidad almacena información y operaciones específicas sobre cada
+      jugador
+  - name: team
+    description: Es una agregación de jugadores que contiene información sobre cada equipo
+paths:
+  /game:
+    post:
+      tags:
+        - game
+      summary: Operación de registro de un nuevo juego
+      operationId: addGame
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/gameDTO'
+        required: true
+      responses:
+        '200':
+          description: Okay. El juego fue registrado satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/gameId'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    get:
+      tags:
+        - game
+      summary: Obtiene la lista de juegos disponibles
+      operationId: getAllGames
+      responses:
+        '200':
+          description: >-
+            Okay. La lista de juegos fue encontrada y devuelta
+            satisfactoriamente
+          content:
+            application/json:
+              schema:
+                type: array
+                description: Lista de los juegos disponibles
+                items:
+                  $ref: '#/components/schemas/gameDTO'
+                uniqueItems: true
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /game/{gameId}:
+    get:
+      tags:
+        - game
+      summary: Obtiene la información de un juego en específico
+      operationId: getGameById
+      parameters:
+        - $ref: '#/components/parameters/gameId'
+      responses:
+        '200':
+          description: Okay. El juego fue encontrado y devuelto satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/gameDTO'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /game/{gameId}/role:
+    patch:
+      tags:
+        - game
+      summary: Añade un rol nuevo al juego
+      operationId: addRoleToGame
+      parameters:
+        - $ref: '#/components/parameters/gameId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/roleDTO'
+        required: true
+      responses:
+        '200':
+          description: Okay. El rol fue añadido al juego satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/gameDTO'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /game/{gameId}/rank:
+    patch:
+      tags:
+        - game
+      summary: Añade un rango nuevo al juego
+      operationId: addRankToGame
+      parameters:
+        - $ref: '#/components/parameters/gameId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/rankDTO'
+        required: true
+      responses:
+        '200':
+          description: Okay. El rango fue añadido al juego satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/gameDTO'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /user/{userId}:
+    get:
+      tags:
+        - user
+      summary: Obtiene la información de un usuario en específico
+      operationId: getUserById
+      parameters:
+        - $ref: '#/components/parameters/userId'
+      responses:
+        '200':
+          description: Okay. El usuario fue encontrado y devuelto satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userDTO'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /user/{userId}/{likedId}:
+    patch:
+      tags:
+        - user
+      summary: Operación para crear un like entre un equipo y un jugador o viceversa
+      operationId: addLikeToUser
+      parameters:
+        - $ref: '#/components/parameters/userId'
+        - $ref: '#/components/parameters/likedId'
+      responses:
+        '200':
+          description: Okay. El like fue registrado satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userDTO'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /player:
+    post:
+      tags:
+        - player
+      summary: Operación de registro de un nuevo jugador
+      operationId: addPlayer
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/playerDTO'
+        required: true
+      responses:
+        '200':
+          description: Okay. El jugador fue registrado satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userId'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    get:
+      tags:
+        - player
+      summary: Obtiene una lista con todos los jugadores
+      operationId: getAllPlayers
+      responses:
+        '200':
+          description: >-
+            Okay. Los jugadores fueron encontrados y devueltos
+            satisfactoriamente
+          content:
+            application/json:
+              schema:
+                type: array
+                description: Lista de los jugadores disponibles
+                items:
+                  $ref: '#/components/schemas/playerDTO'
+                uniqueItems: true
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /player/checkNickname/{playerNickname}:
+    get:
+      tags:
+        - player
+      summary: Comprueba si existe o no un usuario con el nickname pasado por parámetro
+      operationId: checkPlayerWithNickname
+      parameters:
+        - $ref: '#/components/parameters/playerNickname'
+      responses:
+        '200':
+          description: Okay. El jugador fue encontrado o no.
+          content:
+            application/json:
+              schema:
+                type: boolean
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /player/checkEmail/{playerEmail}:
+    get:
+      tags:
+        - player
+      summary: Comprueba si existe o no un usuario con el email pasado por parámetro
+      operationId: checkPlayerWithEmail
+      parameters:
+        - $ref: '#/components/parameters/playerEmail'
+      responses:
+        '200':
+          description: Okay. El jugador fue encontrado o no.
+          content:
+            application/json:
+              schema:
+                type: boolean
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /player/{playerId}:
+    get:
+      tags:
+        - player
+      summary: Obtiene la información de un jugador en específico
+      operationId: getPlayerById
+      parameters:
+        - $ref: '#/components/parameters/playerId'
+      responses:
+        '200':
+          description: Okay. El jugador fue encontrado y devuelto satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/playerDTO'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - player
+      summary: Operación para modificar un jugador ya registrado
+      operationId: modifyPlayer
+      parameters:
+        - $ref: '#/components/parameters/playerId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/playerDTO'
+        required: true
+      responses:
+        '200':
+          description: Okay. El jugador fue modificado satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/playerDTO'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - player
+      summary: Operación para borrar un jugador ya registrado
+      operationId: deletePlayer
+      parameters:
+        - $ref: '#/components/parameters/playerId'
+      responses:
+        '200':
+          description: Okay. El jugador fue eliminado satisfactoriamente
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /team:
+    post:
+      tags:
+        - team
+      summary: Operación de registro de un nuevo equipo
+      operationId: addTeam
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/teamDTO'
+        required: true
+      responses:
+        '200':
+          description: Okay. El equipo fue registrado satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/userId'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    get:
+      tags:
+        - team
+      summary: Obtiene una lista con todos los equipos
+      operationId: getAllTeams
+      responses:
+        '200':
+          description: Okay. Los equipos fueron encontrados y devueltos satisfactoriamente
+          content:
+            application/json:
+              schema:
+                type: array
+                description: Lista de los equipos disponibles
+                items:
+                  $ref: '#/components/schemas/teamDTO'
+                uniqueItems: true
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /team/{teamId}:
+    get:
+      tags:
+        - team
+      summary: Obtiene la información de un equipo en específico
+      operationId: getTeamById
+      parameters:
+        - $ref: '#/components/parameters/teamId'
+      responses:
+        '200':
+          description: Okay. El equipo fue encontrado y devuelto satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/teamDTO'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - team
+      summary: Operación para borrar un equipo ya registrado
+      operationId: deleteTeam
+      parameters:
+        - $ref: '#/components/parameters/teamId'
+      responses:
+        '200':
+          description: Okay. El equipo fue eliminado satisfactoriamente
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /team/{teamId}/{playerId}/add:
+    patch:
+      tags:
+        - team
+      summary: Operación para añadir un miembro del equipo
+      operationId: addMemberToTeam
+      parameters:
+        - $ref: '#/components/parameters/teamId'
+        - $ref: '#/components/parameters/playerId'
+      responses:
+        '200':
+          description: Okay. El jugador fue añadido al equipo satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/teamDTO'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /team/{teamId}/{playerId}/promote:
+    patch:
+      tags:
+        - team
+      summary: Operación para ascender un miembro del equipo a fundador
+      operationId: promoteMemberOfTeam
+      parameters:
+        - $ref: '#/components/parameters/teamId'
+        - $ref: '#/components/parameters/playerId'
+      responses:
+        '200':
+          description: Okay. El jugador fue ascendido a fundador satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/teamDTO'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /team/{teamId}/{playerId}:
+    delete:
+      tags:
+        - team
+      summary: Operación para eliminar un miembro del equipo
+      operationId: deleteMemberOfTeam
+      parameters:
+        - $ref: '#/components/parameters/teamId'
+        - $ref: '#/components/parameters/playerId'
+      responses:
+        '200':
+          description: Okay. El jugador fue eliminado del equipo satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/teamDTO'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  responses:
+    BadRequest:
+      description: Los datos enviados son incorrectos o hay campos obligatorios no enviados
+    NotFound:
+      description: No se encontro la información requerida
+  parameters:
+    gameId:
+      name: gameId
+      in: path
+      description: Identificador del juego
+      required: true
+      schema:
+        type: integer
+        format: int64
+    playerId:
+      name: playerId
+      in: path
+      description: Identificador del jugador
+      required: true
+      schema:
+        type: string
+        format: uuid
+    playerNickname:
+      name: playerNickname
+      in: path
+      description: Nickname del jugador
+      required: true
+      schema:
+        type: string
+    playerEmail:
+      name: playerEmail
+      in: path
+      description: Email del jugador
+      required: true
+      schema:
+        type: string
+        format: email
+        pattern: \\.[Ii][Oo]$
+    teamId:
+      name: teamId
+      in: path
+      description: Identificador del equipo
+      required: true
+      schema:
+        type: string
+        format: uuid
+    userId:
+      name: userId
+      in: path
+      description: Identificador de un usuario, ya sea equipo o jugador
+      required: true
+      schema:
+        type: string
+        format: uuid
+    likedId:
+      name: likedId
+      in: path
+      description: >-
+        Identificador de un usuario que recibirá un like, ya sea equipo o
+        jugador
+      required: true
+      schema:
+        type: string
+        format: uuid
+  schemas:
+    gameDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Identificador del juego
+        name:
+          type: string
+          description: Nombre del juego
+        roles:
+          type: array
+          description: Lista de nombres de los roles del juego
+          items:
+            $ref: '#/components/schemas/roleDTO'
+          uniqueItems: true
+        ranks:
+          type: array
+          description: Lista de nombres de los rangos del juego
+          items:
+            $ref: '#/components/schemas/rankDTO'
+          uniqueItems: true
+    roleDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Identificador del rol
+        name:
+          type: string
+          description: Nombre del rol
+    rankDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+          description: Identificador del rango
+        name:
+          type: string
+          description: Nombre del rango
+        value:
+          type: integer
+          description: Valor numérico del rango
+    playerDTO:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/userId'
+        nickname:
+          type: string
+          description: Apodo del jugador
+        email:
+          type: string
+          format: email
+          pattern: \\.[Ii][Oo]$
+          description: Email del jugador
+        password:
+          type: string
+          format: password
+          description: Contraseña del jugador
+        fullname:
+          type: string
+          description: Nombre completo del jugador
+        birthday:
+          type: string
+          format: date
+          example: '2021-01-30'
+          description: Fecha de nacimiento del jugador
+        gender:
+          type: string
+          description: Género del jugador
+        preferences:
+          $ref: '#/components/schemas/preferencesDTO'
+    teamDTO:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/userId'
+        founder:
+          type: string
+          format: uuid
+          description: Identificador del fundador del equipo
+        members:
+          type: array
+          description: Lista de identificadores de los miembros del equipo
+          items:
+            $ref: '#/components/schemas/userId'
+          minItems: 1
+          maxItems: 5
+          uniqueItems: true
+    preferencesDTO:
+      type: object
+      properties:
+        game:
+          type: string
+          description: Juego en el que el jugador está interesado
+        rank:
+          type: string
+          description: Rango del jugador dentro del juego
+        role:
+          type: string
+          description: Rol del jugador dentro del juego
+        feminine:
+          type: boolean
+          description: >-
+            Denota la preferencia de solo visualizar equipos o jugadoras
+            femeninas. Esta opción solo se tiene en cuenta si el género del
+            jugador o del equipo completo es femenino
+    userDTO:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Id correspondiente a una entidad, ya sea equipo o jugador
+        entityType:
+          type: string
+          enum:
+            - player
+            - team
+          description: Determina si este usuario es un jugador o un equipo
+        likedEntities:
+          type: array
+          description: >-
+            Lista de identificadores de las entidades que recibieron like por el
+            usuario
+          items:
+            $ref: '#/components/schemas/userId'
+          uniqueItems: true
+    userId:
+      type: string
+      format: uuid
+      description: Id correspondiente a una entidad registrada en la aplicación
+    gameId:
+      type: integer
+      format: int64
+      description: Identificador del juego
