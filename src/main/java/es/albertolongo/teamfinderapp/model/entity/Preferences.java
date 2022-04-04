@@ -17,9 +17,11 @@ public class Preferences implements Serializable {
 
     @ManyToOne(optional = false)
     private Rank rank;
+
     private boolean onlyFeminine;
 
     public Preferences() {
+        onlyFeminine = false;
     }
 
     public Preferences(Game game, Role role, Rank rank,

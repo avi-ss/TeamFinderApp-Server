@@ -1,10 +1,12 @@
 package es.albertolongo.teamfinderapp;
 
-import es.albertolongo.teamfinderapp.model.dto.GameDTO;
-import es.albertolongo.teamfinderapp.model.dto.RankDTO;
-import es.albertolongo.teamfinderapp.model.dto.RoleDTO;
+import es.albertolongo.teamfinderapp.model.dto.*;
+import es.albertolongo.teamfinderapp.model.entity.Player;
+import es.albertolongo.teamfinderapp.model.entity.Preferences;
 import es.albertolongo.teamfinderapp.service.GameService;
 import es.albertolongo.teamfinderapp.service.PlayerService;
+import es.albertolongo.teamfinderapp.service.TeamService;
+import es.albertolongo.teamfinderapp.util.CoderPassword;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +14,19 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @SpringBootApplication
 public class TeamFinderApplication implements CommandLineRunner {
 
     @Autowired
     PlayerService playerService;
+
+    @Autowired
+    TeamService teamService;
 
     @Autowired
     GameService gameService;
@@ -33,31 +40,100 @@ public class TeamFinderApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        LOG.info("Inicializando juego de prueba: League of Legends");
-        GameDTO leagueDTO = new GameDTO().name("League of Legends");
 
-        RoleDTO midDTO = new RoleDTO().name("Mid");
-        RankDTO ironDTO = new RankDTO().name("Hierro 1").value(1);
+        // Setting League of Legends
+        {
+            LOG.info("Inicializando juego de prueba: League of Legends");
+            GameDTO leagueDTO = new GameDTO().name("League of Legends");
 
-        Set<RoleDTO> leagueRoles = new HashSet<>(); leagueRoles.add(midDTO);
-        leagueDTO.setRoles(leagueRoles);
+            Set<RoleDTO> leagueRoles = new HashSet<>();
+            leagueRoles.add(new RoleDTO().name("Top"));
+            leagueRoles.add(new RoleDTO().name("Jungle"));
+            leagueRoles.add(new RoleDTO().name("Mid"));
+            leagueRoles.add(new RoleDTO().name("Bottom"));
+            leagueRoles.add(new RoleDTO().name("Support"));
+            leagueDTO.setRoles(leagueRoles);
 
-        Set<RankDTO> leagueRanks = new HashSet<>(); leagueRanks.add(ironDTO);
-        leagueDTO.setRanks(leagueRanks);
+            Set<RankDTO> leagueRanks = new HashSet<>();
+            leagueRanks.add(new RankDTO().name("Iron 4").value(1));
+            leagueRanks.add(new RankDTO().name("Iron 3").value(2));
+            leagueRanks.add(new RankDTO().name("Iron 2").value(3));
+            leagueRanks.add(new RankDTO().name("Iron 1").value(4));
+            leagueRanks.add(new RankDTO().name("Bronze 4").value(5));
+            leagueRanks.add(new RankDTO().name("Bronze 3").value(6));
+            leagueRanks.add(new RankDTO().name("Bronze 2").value(7));
+            leagueRanks.add(new RankDTO().name("Bronze 1").value(8));
+            leagueDTO.setRanks(leagueRanks);
 
-        LOG.info("Inicializando juego de prueba: VALORANT");
-        GameDTO valorantDTO = new GameDTO().name("VALORANT");
+            gameService.addGame(leagueDTO);
+        }
 
-        RoleDTO duelistDTO = new RoleDTO().name("Duelist");
-        RankDTO bronceDTO = new RankDTO().name("Bronce 1").value(1);
+        // Setting Valorant
+        {
+            LOG.info("Inicializando juego de prueba: VALORANT");
+            GameDTO valorantDTO = new GameDTO().name("VALORANT");
 
-        Set<RoleDTO> valorantRoles = new HashSet<>(); valorantRoles.add(duelistDTO);
-        valorantDTO.setRoles(valorantRoles);
+            Set<RoleDTO> valorantRoles = new HashSet<>();
+            valorantRoles.add(new RoleDTO().name("Controller"));
+            valorantRoles.add(new RoleDTO().name("Sentinel"));
+            valorantRoles.add(new RoleDTO().name("Initiator"));
+            valorantRoles.add(new RoleDTO().name("Duelist"));
+            valorantDTO.setRoles(valorantRoles);
 
-        Set<RankDTO> valorantRanks = new HashSet<>(); valorantRanks.add(bronceDTO);
-        valorantDTO.setRanks(valorantRanks);
+            Set<RankDTO> valorantRanks = new HashSet<>();
+            valorantRanks.add(new RankDTO().name("Iron 1").value(1));
+            valorantRanks.add(new RankDTO().name("Iron 2").value(2));
+            valorantRanks.add(new RankDTO().name("Iron 3").value(3));
+            valorantRanks.add(new RankDTO().name("Bronze 1").value(4));
+            valorantRanks.add(new RankDTO().name("Bronze 2").value(5));
+            valorantRanks.add(new RankDTO().name("Bronze 3").value(6));
+            valorantDTO.setRanks(valorantRanks);
 
-        gameService.addGame(leagueDTO);
-        gameService.addGame(valorantDTO);
+            gameService.addGame(valorantDTO);
+        }
+
+        // Setting Player 1
+        PlayerDTO player1DTO = new PlayerDTO().nickname("usuario1")
+                .email("usuario1@gmail.com").fullname("Usuario Uno")
+                .password("password1").gender("MASC").birthday(LocalDate.now().minusYears(16))
+                .preferences(new PreferencesDTO().game("VALORANT").rank("Bronze 1").role("Sentinel").feminine(false));
+
+        // Setting Player 2
+        PlayerDTO player2DTO = new PlayerDTO().nickname("usuario2")
+                .email("usuario2@gmail.com").fullname("Usuario Dos")
+                .password("password2").gender("FEM").birthday(LocalDate.now().minusYears(16))
+                .preferences(new PreferencesDTO().game("VALORANT").rank("Bronze 2").role("Duelist").feminine(false));
+
+        // Setting Player 3
+        PlayerDTO player3DTO = new PlayerDTO().nickname("usuario3")
+                .email("usuario3@gmail.com").fullname("Usuario Tres")
+                .password("password3").gender("OTHER").birthday(LocalDate.now().minusYears(16))
+                .preferences(new PreferencesDTO().game("VALORANT").rank("Bronze 3").role("Duelist").feminine(false));
+
+        // Setting Player 4
+        PlayerDTO player4DTO = new PlayerDTO().nickname("usuario4")
+                .email("usuario4@gmail.com").fullname("Usuario Cuatro")
+                .password("password4").gender("FEM").birthday(LocalDate.now().minusYears(16))
+                .preferences(new PreferencesDTO().game("League of Legends").rank("Bronze 4").role("Mid").feminine(false));
+
+        UUID id1 = playerService.registerPlayer(player1DTO);
+        LOG.info("USER 1: " + id1.toString());
+
+        UUID id2 = playerService.registerPlayer(player2DTO);
+        LOG.info("USER 2: " + id2.toString());
+
+        UUID id3 = playerService.registerPlayer(player3DTO);
+        LOG.info("USER 3: " + id3.toString());
+
+        UUID id4 = playerService.registerPlayer(player4DTO);
+        LOG.info("USER 4: " + id4.toString());
+
+        // Setting Team 1
+        TeamDTO team1DTO = new TeamDTO().founder(id1).addMembersItem(id1);
+        LOG.info("TEAM 1 - {USER 1}: " + teamService.registerTeam(team1DTO).toString());
+
+        // Setting Team 2
+        TeamDTO team2DTO = new TeamDTO().founder(id2).addMembersItem(id2);
+        LOG.info("TEAM 2 - {USER 2}: " + teamService.registerTeam(team2DTO).toString());
     }
 }

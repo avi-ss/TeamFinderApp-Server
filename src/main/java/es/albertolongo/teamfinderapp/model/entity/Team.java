@@ -15,10 +15,10 @@ import java.util.stream.Collectors;
 @PrimaryKeyJoinColumn()
 public class Team extends User implements Serializable {
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne()
     private Player founder;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany()
     @JoinTable()
     private Set<Player> members = new HashSet<>();
 

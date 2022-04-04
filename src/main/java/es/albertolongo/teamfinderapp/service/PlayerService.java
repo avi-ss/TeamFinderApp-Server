@@ -13,11 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -37,7 +36,7 @@ public class PlayerService {
     public PlayerService() {
     }
 
-    public UUID registerPlayer(@NotNull @Valid PlayerDTO playerDTO) {
+    public UUID registerPlayer(@Valid PlayerDTO playerDTO) throws ConstraintViolationException {
 
         Optional<Player> byEmail = playerRepository.findByEmail(playerDTO.getEmail());
         Optional<Player> byNickname = playerRepository.findByNickname(playerDTO.getNickname());
@@ -53,12 +52,23 @@ public class PlayerService {
         Preferences preferences = getPreferences(playerDTO.getPreferences());
         Player player = new Player(playerDTO, preferences);
 
-        return registerPlayer(player).getId();
+        return playerRepository.save(player).getId();
     }
 
     public Player getPlayerById(@NotNull UUID id) {
 
         Optional<Player> player = playerRepository.findById(id);
+
+        if (!player.isPresent()) {
+            throw new PlayerNotFound("Player not found");
+        }
+
+        return player.get();
+    }
+
+    public Player getPlayerByNickname(@NotBlank String nickname) {
+
+        Optional<Player> player = playerRepository.findByNickname(nickname);
 
         if (!player.isPresent()) {
             throw new PlayerNotFound("Player not found");
@@ -76,7 +86,7 @@ public class PlayerService {
         return true;
     }
 
-    public boolean checkPlayerWithEmail(@NotBlank @Pattern(regexp = "\\\\.[Ii][Oo]$") @Email String email) {
+    public boolean checkPlayerWithEmail(@NotBlank String email) {
         Optional<Player> player = playerRepository.findByEmail(email);
 
         if (!player.isPresent()) {
@@ -94,18 +104,18 @@ public class PlayerService {
         return players;
     }
 
-    public Player modifyPlayer(@NotNull UUID id, @NotNull @Valid PlayerDTO playerDTO) {
+    public Player modifyPlayer(@NotNull UUID id, @Valid PlayerDTO playerDTO) {
 
-        Optional<Player> player = playerRepository.findById(id);
+        Optional<Player> byId = playerRepository.findById(id);
 
-        if (!player.isPresent()) {
+        if (!byId.isPresent()) {
             throw new PlayerNotFound("Player not found");
         }
 
         Preferences preferences = getPreferences(playerDTO.getPreferences());
-        player.get().set(playerDTO, preferences);
+        byId.get().set(playerDTO, preferences);
 
-        return registerPlayer(player.get());
+        return playerRepository.save(byId.get());
     }
 
     public void deletePlayer(@NotNull UUID id) {
@@ -117,17 +127,13 @@ public class PlayerService {
         playerRepository.deleteById(id);
     }
 
-    private Player registerPlayer(@NotNull @Valid Player player){
-        return playerRepository.save(player);
-    }
-
     private Preferences getPreferences(PreferencesDTO preferencesDTO) {
 
         Game game = gameService.getGame(preferencesDTO.getGame());
 
         Optional<Role> role = game.getRoles().stream()
                 .filter(r -> preferencesDTO.getRole().equals(r.getRole()))
-                .findAny();
+                .findFirst();
 
         if (!role.isPresent()) {
             throw new RoleNotFound("Role not found");
@@ -135,7 +141,7 @@ public class PlayerService {
 
         Optional<Rank> rank = game.getRanks().stream()
                 .filter(r -> preferencesDTO.getRank().equals(r.getRank()))
-                .findAny();
+                .findFirst();
 
         if (!rank.isPresent()) {
             throw new RankNotFound("Rank not found");

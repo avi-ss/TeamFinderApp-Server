@@ -11,8 +11,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
-
 @Service
 public class PlayerDataService implements UserDetailsService {
 
@@ -26,8 +24,8 @@ public class PlayerDataService implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String id) throws UsernameNotFoundException {
-        Player player = playerService.getPlayerById(UUID.fromString(id));
+    public UserDetails loadUserByUsername(String nickname) throws UsernameNotFoundException {
+        Player player = playerService.getPlayerByNickname(nickname);
 
         return User.withUsername(player.getNickname())
                 .roles("PLAYER").password(player.getPassword())

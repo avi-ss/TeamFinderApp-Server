@@ -6,10 +6,7 @@ import es.albertolongo.teamfinderapp.model.dto.PlayerDTO;
 import es.albertolongo.teamfinderapp.util.CoderPassword;
 
 import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Past;
-import javax.validation.constraints.Pattern;
+import javax.validation.constraints.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.Objects;
@@ -18,21 +15,21 @@ import java.util.Objects;
 @PrimaryKeyJoinColumn()
 public class Player extends User implements Serializable {
 
-    @NotBlank
     @Column(unique = true)
+    @NotBlank
+    @Size(min = 5, max = 16)
     private String nickname;
 
-    @Pattern(
-            regexp = "\\\\.[Ii][Oo]$"
-    )
-    @Email
     @Column(unique = true)
+    @Email
     private String email;
 
     @NotBlank
     String password;
 
     @NotBlank
+    @Size(min = 8, max = 25)
+    @Pattern(regexp = "^[A-Z][a-z]*(\\s[A-Z][a-z]*)?")
     private String fullname;
 
     @Past
