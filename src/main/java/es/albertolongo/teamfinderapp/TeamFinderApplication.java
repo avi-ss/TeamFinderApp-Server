@@ -1,12 +1,15 @@
 package es.albertolongo.teamfinderapp;
 
-import es.albertolongo.teamfinderapp.model.dto.*;
-import es.albertolongo.teamfinderapp.model.entity.Player;
-import es.albertolongo.teamfinderapp.model.entity.Preferences;
+import es.albertolongo.teamfinderapp.model.dto.GameDTO;
+import es.albertolongo.teamfinderapp.model.dto.PlayerDTO;
+import es.albertolongo.teamfinderapp.model.dto.PreferencesDTO;
+import es.albertolongo.teamfinderapp.model.dto.RankDTO;
+import es.albertolongo.teamfinderapp.model.dto.RoleDTO;
+import es.albertolongo.teamfinderapp.model.dto.TeamDTO;
 import es.albertolongo.teamfinderapp.service.GameService;
 import es.albertolongo.teamfinderapp.service.PlayerService;
 import es.albertolongo.teamfinderapp.service.TeamService;
-import es.albertolongo.teamfinderapp.util.CoderPassword;
+import org.openapitools.jackson.nullable.JsonNullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -130,10 +133,14 @@ public class TeamFinderApplication implements CommandLineRunner {
 
         // Setting Team 1
         TeamDTO team1DTO = new TeamDTO().founder(id1).addMembersItem(id1);
-        LOG.info("TEAM 1 - {USER 1}: " + teamService.registerTeam(team1DTO).toString());
+        UUID teamId1 = teamService.registerTeam(team1DTO);
+        LOG.info("TEAM 1 - {USER 1}: " + teamId1.toString());
 
         // Setting Team 2
         TeamDTO team2DTO = new TeamDTO().founder(id2).addMembersItem(id2);
         LOG.info("TEAM 2 - {USER 2}: " + teamService.registerTeam(team2DTO).toString());
+
+        player1DTO.setTeam(JsonNullable.of(teamId1));
+        playerService.modifyPlayer(id1, player1DTO);
     }
 }

@@ -40,7 +40,7 @@ public class Player extends User implements Serializable {
     private Gender gender;
 
     @ManyToOne()
-    @JoinTable(name = "teamId")
+    @JoinColumn(name = "team")
     private Team team;
 
     @Embedded

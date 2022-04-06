@@ -116,7 +116,7 @@ public class PlayerService {
             throw new PlayerNotFound("Player not found");
         }
 
-        Team team = teamService.getTeam(playerDTO.getId());
+        Team team = teamService.getTeam(playerDTO.getTeam().get());
         Preferences preferences = getPreferences(playerDTO.getPreferences());
 
         byId.get().set(playerDTO, team, preferences);
