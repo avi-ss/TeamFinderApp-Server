@@ -104,7 +104,7 @@
                         </goals>
                         <configuration>
                             <inputSpec>
-                                ${project.basedir}/src/main/resources/static/api-v8.yml
+                                ${project.basedir}/src/main/resources/static/api-v9.yml
                             </inputSpec>
                             <generatorName>spring</generatorName>
                             <apiPackage>es.albertolongo.teamfinderapp.api</apiPackage>

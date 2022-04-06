@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import javax.transaction.Transactional;
 import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
@@ -39,6 +40,7 @@ public class PlayerService {
     public PlayerService() {
     }
 
+    @Transactional
     public UUID registerPlayer(@Valid PlayerDTO playerDTO) throws ConstraintViolationException {
 
         Optional<Player> byEmail = playerRepository.findByEmail(playerDTO.getEmail());
@@ -108,6 +110,7 @@ public class PlayerService {
         return players;
     }
 
+    @Transactional
     public Player modifyPlayer(@NotNull UUID id, @Valid PlayerDTO playerDTO) {
 
         Optional<Player> byId = playerRepository.findById(id);
@@ -124,10 +127,18 @@ public class PlayerService {
         return playerRepository.save(byId.get());
     }
 
+    @Transactional
     public void deletePlayer(@NotNull UUID id) {
 
-        if (!playerRepository.existsById(id)) {
+        Optional<Player> byId = playerRepository.findById(id);
+
+        if (!byId.isPresent()) {
             throw new PlayerNotFound("Player not found");
+        }
+
+        // Si es el último jugador del equipo, este se elimina.
+        if(byId.get().getTeam() != null && byId.get().getTeam().getMembers().size() == 1){
+            teamService.deleteTeam(byId.get().getTeam().getId());
         }
 
         playerRepository.deleteById(id);

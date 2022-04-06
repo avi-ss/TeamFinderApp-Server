@@ -132,15 +132,15 @@ public class TeamFinderApplication implements CommandLineRunner {
         LOG.info("USER 4: " + id4.toString());
 
         // Setting Team 1
-        TeamDTO team1DTO = new TeamDTO().founder(id1).addMembersItem(id1);
+        TeamDTO team1DTO = new TeamDTO().addMembersItem(id1);
         UUID teamId1 = teamService.registerTeam(team1DTO);
         LOG.info("TEAM 1 - {USER 1}: " + teamId1.toString());
 
-        // Setting Team 2
-        TeamDTO team2DTO = new TeamDTO().founder(id2).addMembersItem(id2);
-        LOG.info("TEAM 2 - {USER 2}: " + teamService.registerTeam(team2DTO).toString());
+        teamService.addTeamMember(teamId1, id2);
 
-        player1DTO.setTeam(JsonNullable.of(teamId1));
-        playerService.modifyPlayer(id1, player1DTO);
+        // Setting Team 2
+//        TeamDTO team2DTO = new TeamDTO().founder(id2).addMembersItem(id2);
+//        LOG.info("TEAM 2 - {USER 2}: " + teamService.registerTeam(team2DTO).toString());
+
     }
 }

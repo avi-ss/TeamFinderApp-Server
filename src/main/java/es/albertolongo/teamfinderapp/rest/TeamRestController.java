@@ -73,12 +73,6 @@ public class TeamRestController implements TeamApi {
     }
 
     @Override
-    public ResponseEntity<TeamDTO> promoteMemberOfTeam(UUID teamId, UUID playerId) {
-        Team team = teamService.promoteTeamMember(teamId, playerId);
-        return ResponseEntity.ok(team.toDTO());
-    }
-
-    @Override
     public ResponseEntity<TeamDTO> deleteMemberOfTeam(UUID teamId, UUID playerId) {
         Team team = teamService.deleteTeamMember(teamId, playerId);
         return ResponseEntity.ok(team.toDTO());

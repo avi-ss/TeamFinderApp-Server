@@ -39,8 +39,8 @@ public class Player extends User implements Serializable {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @ManyToOne()
-    @JoinColumn(name = "team")
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "player_team")
     private Team team;
 
     @Embedded
@@ -138,10 +138,9 @@ public class Player extends User implements Serializable {
         playerDTO.setGender(gender.toString());
         playerDTO.setPreferences(preferences.toDTO());
 
-        if(team == null) {
+        if (team == null) {
             playerDTO.setTeam(JsonNullable.undefined());
-        }
-        else{
+        } else {
             playerDTO.setTeam(JsonNullable.of(team.id));
         }
 

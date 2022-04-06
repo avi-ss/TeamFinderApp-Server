@@ -15,28 +15,17 @@ import java.util.stream.Collectors;
 @PrimaryKeyJoinColumn()
 public class Team extends User implements Serializable {
 
-    @OneToOne()
-    private Player founder;
-
-    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
+    @OneToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinColumn(name = "player_team")
     private Set<Player> members = new HashSet<>();
 
     public Team() {
         super(EntityType.TEAM);
     }
 
-    public Team(Player founder, Set<Player> members) {
+    public Team(Set<Player> members) {
         super(EntityType.TEAM);
-        this.founder = founder;
         this.members = members;
-    }
-
-    public Player getFounder() {
-        return founder;
-    }
-
-    public void setFounder(Player founder) {
-        this.founder = founder;
     }
 
     public Set<Player> getMembers() {
@@ -47,7 +36,7 @@ public class Team extends User implements Serializable {
         this.members = members;
     }
 
-    public TeamDTO toDTO(){
+    public TeamDTO toDTO() {
 
         TeamDTO teamDTO = new TeamDTO();
         Set<UUID> dtoMembers = members.stream()
@@ -55,7 +44,6 @@ public class Team extends User implements Serializable {
                 .collect(Collectors.toSet());
 
         teamDTO.setId(id);
-        teamDTO.setFounder(founder.getId());
         teamDTO.setMembers(dtoMembers);
 
         return teamDTO;
