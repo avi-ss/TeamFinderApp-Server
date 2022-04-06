@@ -18,8 +18,7 @@ public class Team extends User implements Serializable {
     @OneToOne()
     private Player founder;
 
-    @OneToMany()
-    @JoinTable()
+    @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
     private Set<Player> members = new HashSet<>();
 
     public Team() {

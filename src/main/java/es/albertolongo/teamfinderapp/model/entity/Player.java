@@ -4,6 +4,7 @@ import es.albertolongo.teamfinderapp.model.enums.EntityType;
 import es.albertolongo.teamfinderapp.model.enums.Gender;
 import es.albertolongo.teamfinderapp.model.dto.PlayerDTO;
 import es.albertolongo.teamfinderapp.util.CoderPassword;
+import org.openapitools.jackson.nullable.JsonNullable;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;
@@ -38,6 +39,10 @@ public class Player extends User implements Serializable {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
+    @ManyToOne()
+    @JoinTable(name = "teamId")
+    private Team team;
+
     @Embedded
     protected Preferences preferences;
 
@@ -45,9 +50,9 @@ public class Player extends User implements Serializable {
         super(EntityType.PLAYER);
     }
 
-    public Player(PlayerDTO playerDTO, Preferences preferences) {
+    public Player(PlayerDTO playerDTO, Team team, Preferences preferences) {
         super(EntityType.PLAYER);
-        set(playerDTO, preferences);
+        set(playerDTO, team, preferences);
     }
 
     public String getNickname() {
@@ -94,6 +99,14 @@ public class Player extends User implements Serializable {
         this.gender = gender;
     }
 
+    public Team getTeam() {
+        return team;
+    }
+
+    public void setTeam(Team team) {
+        this.team = team;
+    }
+
     public Preferences getPreferences() {
         return preferences;
     }
@@ -102,13 +115,14 @@ public class Player extends User implements Serializable {
         this.preferences = preferences;
     }
 
-    public void set(PlayerDTO playerDTO, Preferences preferences) {
+    public void set(PlayerDTO playerDTO, Team team, Preferences preferences) {
         this.nickname = playerDTO.getNickname();
         this.email = playerDTO.getEmail();
         this.password = CoderPassword.encode(playerDTO.getPassword());
         this.fullname = playerDTO.getFullname();
         this.birthday = playerDTO.getBirthday();
         this.gender = Gender.valueOf(playerDTO.getGender().toUpperCase());
+        this.team = team;
         this.preferences = preferences;
     }
 
@@ -123,6 +137,13 @@ public class Player extends User implements Serializable {
         playerDTO.setBirthday(birthday);
         playerDTO.setGender(gender.toString());
         playerDTO.setPreferences(preferences.toDTO());
+
+        if(team == null) {
+            playerDTO.setTeam(JsonNullable.undefined());
+        }
+        else{
+            playerDTO.setTeam(JsonNullable.of(team.id));
+        }
 
         return playerDTO;
     }

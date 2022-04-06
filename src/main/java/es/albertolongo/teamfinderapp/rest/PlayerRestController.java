@@ -7,6 +7,7 @@ import es.albertolongo.teamfinderapp.exception.game.RoleNotFound;
 import es.albertolongo.teamfinderapp.exception.player.EmailAlreadyInUse;
 import es.albertolongo.teamfinderapp.exception.player.NicknameAlreadyInUse;
 import es.albertolongo.teamfinderapp.exception.player.PlayerNotFound;
+import es.albertolongo.teamfinderapp.exception.team.TeamNotFound;
 import es.albertolongo.teamfinderapp.model.dto.PlayerDTO;
 import es.albertolongo.teamfinderapp.model.entity.Player;
 import es.albertolongo.teamfinderapp.service.PlayerService;

@@ -486,7 +486,6 @@ components:
       schema:
         type: string
         format: email
-        pattern: \\.[Ii][Oo]$
     teamId:
       name: teamId
       in: path
@@ -593,6 +592,11 @@ components:
         gender:
           type: string
           description: Género del jugador
+        team:
+          type: string
+          format: uuid
+          nullable: true
+          description: Identificador del equipo al que pertenece el jugador
         preferences:
           $ref: '#/components/schemas/preferencesDTO'
     teamDTO:
