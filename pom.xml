@@ -64,7 +64,7 @@
         <dependency>
             <groupId>io.swagger</groupId>
             <artifactId>swagger-annotations</artifactId>
-            <version>1.6.1</version>
+            <version>1.6.5</version>
         </dependency>
 
         <dependency>
@@ -76,7 +76,7 @@
         <dependency>
             <groupId>org.openapitools</groupId>
             <artifactId>jackson-databind-nullable</artifactId>
-            <version>0.2.1</version>
+            <version>0.2.2</version>
         </dependency>
 
         <dependency>
