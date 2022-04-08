@@ -15,8 +15,9 @@ import java.util.stream.Collectors;
 @PrimaryKeyJoinColumn()
 public class Team extends User implements Serializable {
 
-    @OneToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(name = "player_team")
+    @OneToMany(fetch = FetchType.EAGER,
+            cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH},
+            mappedBy = "team")
     private Set<Player> members = new HashSet<>();
 
     public Team() {

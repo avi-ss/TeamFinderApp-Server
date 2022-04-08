@@ -141,12 +141,7 @@ public class TeamFinderApplication implements CommandLineRunner {
         UUID teamId1 = teamService.registerTeam(team1DTO);
         LOG.info("TEAM 1 - {USER 1}: " + teamId1.toString());
 
-        teamService.addTeamMember(teamId1, id2);
-
-        // Setting Team 2
-//        TeamDTO team2DTO = new TeamDTO().founder(id2).addMembersItem(id2);
-//        LOG.info("TEAM 2 - {USER 2}: " + teamService.registerTeam(team2DTO).toString());
-
+        //teamService.addTeamMember(teamId1, id2);
     }
 
 }

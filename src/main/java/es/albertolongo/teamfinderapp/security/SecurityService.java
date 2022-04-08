@@ -23,6 +23,7 @@ public class SecurityService extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
+        http.headers().frameOptions().disable();
         http.httpBasic();
 
         //Permitir el acceso a cualquiera para que se registre como jugador

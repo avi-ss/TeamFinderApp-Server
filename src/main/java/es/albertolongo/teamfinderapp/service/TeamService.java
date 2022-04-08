@@ -23,6 +23,7 @@ import java.util.stream.StreamSupport;
 
 @Service
 @Validated
+@Transactional
 public class TeamService {
 
     @Autowired
@@ -34,7 +35,6 @@ public class TeamService {
     public TeamService() {
     }
 
-    @Transactional
     public UUID registerTeam(@NotNull @Valid TeamDTO teamDTO) {
 
         Team team = new Team();
@@ -72,7 +72,6 @@ public class TeamService {
         return teams;
     }
 
-    @Transactional
     public Team addTeamMember(@NotNull UUID teamId, @NotNull UUID playerId) {
 
         Optional<Team> team = teamRepository.findById(teamId);

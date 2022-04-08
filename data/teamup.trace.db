@@ -1,0 +1,4 @@
+2022-04-08 15:04:38 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Tabla "GAME" no encontrada
+Table "GAME" not found; SQL statement:
+select game0_.id as id1_0_, game0_.name as name2_0_ from game game0_ where game0_.name=? [42102-200]

@@ -39,8 +39,8 @@ public class Player extends User implements Serializable {
     @Enumerated(EnumType.STRING)
     private Gender gender;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "player_team")
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @JoinColumn(name = "team_id")
     private Team team;
 
     @Embedded
