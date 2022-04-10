@@ -23,8 +23,10 @@ public class SecurityService extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
-        http.headers().frameOptions().disable();
         http.httpBasic();
+
+        // Para poder visualizar la consola de H2
+        http.headers().frameOptions().disable();
 
         //Permitir el acceso a cualquiera para que se registre como jugador
         http.authorizeRequests().antMatchers(HttpMethod.POST, "/player").anonymous();
