@@ -119,10 +119,13 @@ public class PlayerService {
             throw new PlayerNotFound("Player not found");
         }
 
-        Team team = teamService.getTeam(playerDTO.getTeam().get());
         Preferences preferences = getPreferences(playerDTO.getPreferences());
+        byId.get().set(playerDTO, null, preferences);
 
-        byId.get().set(playerDTO, team, preferences);
+        if(playerDTO.getTeam().isPresent()){
+            Team team = teamService.getTeam(playerDTO.getTeam().get());
+            byId.get().setTeam(team);
+        }
 
         return playerRepository.save(byId.get());
     }

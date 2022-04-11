@@ -132,8 +132,9 @@ public class Player extends User implements Serializable {
 
         playerDTO.setId(id);
         playerDTO.setNickname(nickname);
-        playerDTO.setFullname(fullname);
         playerDTO.setEmail(email);
+        playerDTO.setPassword(password);
+        playerDTO.setFullname(fullname);
         playerDTO.setBirthday(birthday);
         playerDTO.setGender(gender.toString());
         playerDTO.setPreferences(preferences.toDTO());
