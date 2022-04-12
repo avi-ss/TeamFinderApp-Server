@@ -56,8 +56,10 @@ public class SecurityService extends WebSecurityConfigurerAdapter {
 //        http.authorizeRequests().anyRequest().anonymous();
 
         http.authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/login", "/player").permitAll()
                 .antMatchers("/h2/**").permitAll()
+                .antMatchers("/auth/**").permitAll()
+                .antMatchers(HttpMethod.POST, "/player").permitAll()
+                .antMatchers(HttpMethod.GET, "/game/**").permitAll()
                 .anyRequest().authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(jwtEntryPoint)
                 .and()

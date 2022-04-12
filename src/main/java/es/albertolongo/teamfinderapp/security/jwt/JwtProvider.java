@@ -1,15 +1,22 @@
 package es.albertolongo.teamfinderapp.security.jwt;
 
-import es.albertolongo.teamfinderapp.model.entity.Player;
+import com.nimbusds.jwt.JWT;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.JWTParser;
+import es.albertolongo.teamfinderapp.security.jwt.dto.Token;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
+import java.text.ParseException;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtProvider {
@@ -26,10 +33,16 @@ public class JwtProvider {
 
         // PlayerPrincipal extends UserDetails
         UserDetails principal = (UserDetails) auth.getPrincipal();
+        List<String> roles = principal.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority).collect(Collectors.toList());
 
-        return Jwts.builder().setSubject(principal.getUsername()).setIssuedAt(new Date())
+        return Jwts.builder()
+                .setSubject(principal.getUsername())
+                .claim("roles", roles)
+                .setIssuedAt(new Date())
                 .setExpiration(new Date(new Date().getTime() + expiration * 1000))
-                .signWith(SignatureAlgorithm.HS512, secret).compact();
+                .signWith(SignatureAlgorithm.HS512, secret)
+                .compact();
     }
 
     public String getNicknameFromToken(String token) {
@@ -53,5 +66,21 @@ public class JwtProvider {
         }
 
         return false;
+    }
+
+    public String refreshToken(Token token) throws ParseException {
+
+        JWT jwt = JWTParser.parse(token.getToken());
+        JWTClaimsSet claimsSet = jwt.getJWTClaimsSet();
+        String nickname = claimsSet.getSubject();
+        List<String> roles = (List<String>) claimsSet.getClaim("roles");
+
+        return Jwts.builder()
+                .setSubject(nickname)
+                .claim("roles", roles)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(new Date().getTime() + expiration * 1000))
+                .signWith(SignatureAlgorithm.HS512, secret)
+                .compact();
     }
 }
