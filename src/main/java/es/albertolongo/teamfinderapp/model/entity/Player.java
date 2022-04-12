@@ -5,6 +5,7 @@ import es.albertolongo.teamfinderapp.model.enums.Gender;
 import es.albertolongo.teamfinderapp.model.dto.PlayerDTO;
 import es.albertolongo.teamfinderapp.util.CoderPassword;
 import org.openapitools.jackson.nullable.JsonNullable;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
 import javax.validation.constraints.*;

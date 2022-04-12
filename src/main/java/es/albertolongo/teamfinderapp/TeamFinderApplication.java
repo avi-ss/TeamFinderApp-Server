@@ -1,26 +1,15 @@
 package es.albertolongo.teamfinderapp;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import es.albertolongo.teamfinderapp.model.dto.GameDTO;
-import es.albertolongo.teamfinderapp.model.dto.PlayerDTO;
-import es.albertolongo.teamfinderapp.model.dto.PreferencesDTO;
-import es.albertolongo.teamfinderapp.model.dto.RankDTO;
-import es.albertolongo.teamfinderapp.model.dto.RoleDTO;
-import es.albertolongo.teamfinderapp.model.dto.TeamDTO;
+import es.albertolongo.teamfinderapp.model.dto.*;
 import es.albertolongo.teamfinderapp.service.GameService;
 import es.albertolongo.teamfinderapp.service.PlayerService;
 import es.albertolongo.teamfinderapp.service.TeamService;
-import org.openapitools.jackson.nullable.JsonNullable;
-import org.openapitools.jackson.nullable.JsonNullableModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Primary;
 
 import java.time.LocalDate;
 import java.util.HashSet;
