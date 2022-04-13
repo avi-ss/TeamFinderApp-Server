@@ -217,6 +217,25 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
+  /player/nickname/{playerNickname}:
+    get:
+      tags:
+        - player
+      summary: Obtiene la información de un jugador en específico a partir de su nick
+      operationId: getPlayerByNickname
+      parameters:
+        - $ref: '#/components/parameters/playerNickname'
+      responses:
+        '200':
+          description: Okay. El jugador fue encontrado y devuelto satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/playerDTO'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /player/checkNickname/{playerNickname}:
     get:
       tags:
@@ -547,6 +566,7 @@ components:
           description: Apodo del jugador
           minLength: 5
           maxLength: 16
+          pattern: ^[^0-9]\w+$
         email:
           type: string
           format: email
