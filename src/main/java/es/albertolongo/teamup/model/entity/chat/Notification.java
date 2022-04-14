@@ -1,11 +1,9 @@
 package es.albertolongo.teamup.model.entity.chat;
 
-import javax.persistence.Id;
 import java.io.Serializable;
 
 public class Notification implements Serializable {
 
-    @Id
     private Long id;
     private String senderId;
     private String senderName;

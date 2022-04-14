@@ -53,7 +53,8 @@ public class SecurityService extends WebSecurityConfigurerAdapter {
 
         http.authorizeRequests()
                 // Establecer con WebSocket para todos?
-                // .antMatchers("/ws/**").permitAll()
+                .antMatchers("/ws/**").permitAll()
+                .antMatchers("/messages/**").permitAll()
                 // Para poder entrar en la consola de la base de datos
                 .antMatchers("/h2/**").permitAll()
                 // las rutas relacionadas con autentificación

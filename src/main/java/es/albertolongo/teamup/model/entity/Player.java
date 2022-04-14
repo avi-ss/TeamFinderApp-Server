@@ -1,6 +1,6 @@
 package es.albertolongo.teamup.model.entity;
 
-import es.albertolongo.teamup.model.enums.EntityType;
+import es.albertolongo.teamup.model.enums.UserType;
 import es.albertolongo.teamup.model.enums.Gender;
 import es.albertolongo.teamup.model.dto.PlayerDTO;
 import es.albertolongo.teamup.util.CoderPassword;
@@ -48,11 +48,11 @@ public class Player extends User implements Serializable {
     protected Preferences preferences;
 
     public Player() {
-        super(EntityType.PLAYER);
+        super(UserType.PLAYER);
     }
 
     public Player(PlayerDTO playerDTO, Team team, Preferences preferences) {
-        super(EntityType.PLAYER);
+        super(UserType.PLAYER);
         set(playerDTO, team, preferences);
     }
 

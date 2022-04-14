@@ -12,7 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.ConstraintViolationException;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/")
@@ -50,5 +52,14 @@ public class UserRestController implements UserApi {
     public ResponseEntity<UserDTO> addLikeToUser(UUID userId, UUID likedId) {
         User user = userService.addLike(userId, likedId);
         return ResponseEntity.status(HttpStatus.OK).body(user.userDTO());
+    }
+
+    @Override
+    public ResponseEntity<Set<UserDTO>> getMatchedUsers(UUID userId){
+        Set<User> matchedUsers = userService.getMatchedUsers(userId);
+
+        Set<UserDTO> matchedUsersDTO = matchedUsers.stream().map(user -> user.userDTO()).collect(Collectors.toSet());
+
+        return ResponseEntity.ok(matchedUsersDTO);
     }
 }

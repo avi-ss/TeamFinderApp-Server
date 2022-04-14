@@ -154,6 +154,33 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
+  /user/matched/{userId}:
+    get:
+      tags:
+        - user
+      summary: >-
+        Obtiene una lista con los usuarios que hicieron match con el usuario en
+        específico
+      operationId: getMatchedUsers
+      parameters:
+        - $ref: '#/components/parameters/userId'
+      responses:
+        '200':
+          description: >-
+            Okay. El la lista de usuarios que hicieron match fue encontrada y
+            devuelta satisfactoriamente
+          content:
+            application/json:
+              schema:
+                type: array
+                description: Lista con los usuarios que hicieron match con el usuario
+                items:
+                  $ref: '#/components/schemas/userDTO'
+                uniqueItems: true
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /user/{userId}/{likedId}:
     patch:
       tags:

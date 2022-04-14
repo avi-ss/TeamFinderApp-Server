@@ -1,6 +1,6 @@
 package es.albertolongo.teamup.model.enums;
 
-public enum EntityType {
+public enum UserType {
     PLAYER,
     TEAM
 }

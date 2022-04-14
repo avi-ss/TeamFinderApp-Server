@@ -1,7 +1,7 @@
 package es.albertolongo.teamup.model.entity;
 
 import es.albertolongo.teamup.model.dto.UserDTO;
-import es.albertolongo.teamup.model.enums.EntityType;
+import es.albertolongo.teamup.model.enums.UserType;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
@@ -20,39 +20,57 @@ public class User {
     protected UUID id;
 
     @Enumerated(EnumType.STRING)
-    EntityType entityType;
+    UserType userType;
 
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinTable()
-    protected Set<User> likedEntities = new HashSet<>();
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<User> likedUsers;
+
+    @ManyToMany(fetch = FetchType.EAGER, mappedBy = "likedUsers")
+    private Set<User> likedUsersOf;
 
     public User() {
         id = UUID.randomUUID();
+        likedUsers = new HashSet<>();
+        likedUsersOf = new HashSet<>();
     }
 
-    public User(EntityType entityType) {
+    public User(UserType userType) {
         id = UUID.randomUUID();
-        this.entityType = entityType;
+        likedUsers = new HashSet<>();
+        likedUsersOf = new HashSet<>();
+        this.userType = userType;
+    }
+
+    public boolean hasLikedUser(User user){
+        return likedUsers.contains(user);
     }
 
     public UUID getId() {
         return id;
     }
 
-    public EntityType getEntityType() {
-        return entityType;
+    public UserType getUserType() {
+        return userType;
     }
 
-    public void setEntityType(EntityType entityType) {
-        this.entityType = entityType;
+    public void setUserType(UserType userType) {
+        this.userType = userType;
     }
 
-    public Set<User> getLikedEntities() {
-        return likedEntities;
+    public Set<User> getLikedUsers() {
+        return likedUsers;
     }
 
-    public void setLikedEntities(Set<User> likedEntities) {
-        this.likedEntities = likedEntities;
+    public void setLikedUsers(Set<User> likedEntities) {
+        this.likedUsers = likedEntities;
+    }
+
+    public Set<User> getLikedUsersOf() {
+        return likedUsersOf;
+    }
+
+    public void setLikedUsersOf(Set<User> likedOf) {
+        this.likedUsersOf = likedOf;
     }
 
     public UserDTO userDTO(){
@@ -60,9 +78,13 @@ public class User {
         UserDTO userDTO = new UserDTO();
 
         userDTO.setId(id);
-        userDTO.setEntityType(UserDTO.EntityTypeEnum.valueOf(entityType.toString()));
+        userDTO.setEntityType(UserDTO.EntityTypeEnum.valueOf(userType.toString()));
 
-        Set<UUID> liked = likedEntities.stream()
+        Set<UUID> liked = likedUsers.stream()
+                .map(id -> id.getId())
+                .collect(Collectors.toSet());
+
+        Set<UUID> likedOf = likedUsersOf.stream()
                 .map(id -> id.getId())
                 .collect(Collectors.toSet());
 

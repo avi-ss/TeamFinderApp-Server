@@ -1,6 +1,5 @@
 package es.albertolongo.teamup.service;
 
-import es.albertolongo.teamup.exception.user.InvalidLikedEntity;
 import es.albertolongo.teamup.exception.user.UserNotFound;
 import es.albertolongo.teamup.model.entity.User;
 import es.albertolongo.teamup.repository.UserRepository;
@@ -9,8 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotNull;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service
 @Validated
@@ -47,11 +45,29 @@ public class UserService {
             throw new UserNotFound("Liked user not found");
         }
 
-        if(user.get().getEntityType().equals(likedUser.get().getEntityType())){
-            throw new InvalidLikedEntity("Cannot like the same entity type");
-        }
+        // Ahora se puede dar like entre jugadores
 
-        user.get().getLikedEntities().add(likedUser.get());
+//        if(user.get().getUserType().equals(likedUser.get().getUserType())){
+//            throw new InvalidLikedEntity("Cannot like the same entity type");
+//        }
+
+        user.get().getLikedUsers().add(likedUser.get());
         return userRepository.save(user.get());
+    }
+
+    public Set<User> getMatchedUsers(UUID userId) {
+
+        User user = getUser(userId);
+        Set<User> likedUsers = user.getLikedUsers();
+
+        Set<User> matchedUsers = new HashSet<>();
+
+        likedUsers.forEach(other -> {
+            if(other.hasLikedUser(user)){
+                matchedUsers.add(other);
+            }
+        });
+
+        return matchedUsers;
     }
 }

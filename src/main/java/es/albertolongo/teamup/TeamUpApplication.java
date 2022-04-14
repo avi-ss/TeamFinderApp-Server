@@ -4,6 +4,7 @@ import es.albertolongo.teamup.model.dto.*;
 import es.albertolongo.teamup.service.GameService;
 import es.albertolongo.teamup.service.PlayerService;
 import es.albertolongo.teamup.service.TeamService;
+import es.albertolongo.teamup.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,9 @@ import java.util.UUID;
 
 @SpringBootApplication
 public class TeamUpApplication implements CommandLineRunner {
+
+    @Autowired
+    UserService userService;
 
     @Autowired
     PlayerService playerService;
@@ -130,7 +134,15 @@ public class TeamUpApplication implements CommandLineRunner {
         UUID teamId1 = teamService.registerTeam(team1DTO);
         LOG.info("TEAM 1 - {USER 1}: " + teamId1.toString());
 
-        //teamService.addTeamMember(teamId1, id2);
+        // Setting a match between USER 1 and USER 2
+        userService.addLike(id1, id2);
+        userService.addLike(id2, id1);
+
+        // Setting a match between USER 1 and USER 3
+        userService.addLike(id1, id3);
+        userService.addLike(id3, id1);
+
+        LOG.info("MATCH LIST - USER 1: " + userService.getMatchedUsers(id1).toString());
     }
 
 }

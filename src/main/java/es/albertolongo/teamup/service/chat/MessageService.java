@@ -38,7 +38,7 @@ public class MessageService {
                 chatId.map(cId -> messageRepository.findByChatId(cId)).orElse(new ArrayList<>());
 
         if(messages.size() > 0) {
-            updateStatuses(senderId, recipientId, MessageStatus.DELIVERED);
+            updateStatuses(messages, MessageStatus.DELIVERED);
         }
 
         return messages;
@@ -55,14 +55,13 @@ public class MessageService {
                         new MessageNotFound("Can't find message (" + id + ")"));
     }
 
-    public void updateStatuses(String senderId, String recipientId, MessageStatus status) {
-        List<Message> messageList = findChatMessages(senderId, recipientId);
+    public void updateStatuses(List<Message> messages, MessageStatus status) {
 
-        messageList.stream().map(message -> {
+        messages.stream().map(message -> {
             message.setStatus(status);
             return message;
         }).collect(Collectors.toList());
 
-        messageRepository.saveAll(messageList);
+        messageRepository.saveAll(messages);
     }
 }

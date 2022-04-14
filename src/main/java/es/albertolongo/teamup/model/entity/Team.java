@@ -1,7 +1,7 @@
 package es.albertolongo.teamup.model.entity;
 
 import es.albertolongo.teamup.model.dto.TeamDTO;
-import es.albertolongo.teamup.model.enums.EntityType;
+import es.albertolongo.teamup.model.enums.UserType;
 
 import javax.persistence.*;
 import java.io.Serializable;
@@ -21,11 +21,11 @@ public class Team extends User implements Serializable {
     private Set<Player> members = new HashSet<>();
 
     public Team() {
-        super(EntityType.TEAM);
+        super(UserType.TEAM);
     }
 
     public Team(Set<Player> members) {
-        super(EntityType.TEAM);
+        super(UserType.TEAM);
         this.members = members;
     }
 
