@@ -9,9 +9,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+
+import java.sql.SQLOutput;
 
 @Controller
 public class ChatRestController {
@@ -25,15 +28,16 @@ public class ChatRestController {
     @Autowired
     private RoomService chatRoomService;
 
-    @MessageMapping("/chat")
+    @MessageMapping("/private")
     public void processMessage(@Payload Message chatMessage) {
         var chatId = chatRoomService
                 .getChatId(chatMessage.getSenderId(), chatMessage.getRecipientId(), true);
         chatMessage.setChatId(chatId.get());
 
         Message saved = chatMessageService.save(chatMessage);
+        System.out.println(saved.getRecipientId());
         messagingTemplate.convertAndSendToUser(
-                chatMessage.getRecipientId(),"/queue/messages",
+                chatMessage.getRecipientId(),"/user/queue",
                 new Notification(
                         saved.getId(),
                         saved.getSenderId(),
