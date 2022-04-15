@@ -1,6 +1,7 @@
 package es.albertolongo.teamup;
 
 import es.albertolongo.teamup.model.dto.*;
+import es.albertolongo.teamup.model.entity.Player;
 import es.albertolongo.teamup.service.GameService;
 import es.albertolongo.teamup.service.PlayerService;
 import es.albertolongo.teamup.service.TeamService;
@@ -132,7 +133,11 @@ public class TeamUpApplication implements CommandLineRunner {
         // Setting Team 1
         TeamDTO team1DTO = new TeamDTO().addMembersItem(id1);
         UUID teamId1 = teamService.registerTeam(team1DTO);
-        LOG.info("TEAM 1 - {USER 1}: " + teamId1.toString());
+
+        player2DTO.team(teamId1);
+        playerService.modifyPlayer(id2, player2DTO);
+
+        LOG.info("TEAM 1 - {USER 1}: " + teamId1.toString() + " - MEMBERS: " + teamService.getTeam(teamId1).getMembers().size());
 
         // Setting a match between USER 1 and USER 2
         userService.addLike(id1, id2);

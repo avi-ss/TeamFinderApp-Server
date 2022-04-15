@@ -41,7 +41,6 @@ public class Player extends User implements Serializable {
     private Gender gender;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name = "team_id")
     private Team team;
 
     @Embedded

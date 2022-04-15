@@ -5,6 +5,7 @@ import es.albertolongo.teamup.exception.game.RoleNotFound;
 import es.albertolongo.teamup.exception.player.EmailAlreadyInUse;
 import es.albertolongo.teamup.exception.player.NicknameAlreadyInUse;
 import es.albertolongo.teamup.exception.player.PlayerNotFound;
+import es.albertolongo.teamup.exception.team.InvalidTeam;
 import es.albertolongo.teamup.model.dto.PlayerDTO;
 import es.albertolongo.teamup.model.dto.PreferencesDTO;
 import es.albertolongo.teamup.model.entity.*;
@@ -18,11 +19,9 @@ import javax.validation.ConstraintViolationException;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
+import java.util.stream.Stream;
 
 @Service
 @Validated
@@ -101,15 +100,6 @@ public class PlayerService {
         return true;
     }
 
-    public Set<Player> getAllPlayers() {
-
-        Iterable<Player> playersIt = playerRepository.findAll();
-
-        Set<Player> players = StreamSupport.stream(playersIt.spliterator(), false).collect(Collectors.toSet());
-
-        return players;
-    }
-
     @Transactional
     public Player modifyPlayer(@NotNull UUID id, @Valid PlayerDTO playerDTO) {
 
@@ -122,7 +112,7 @@ public class PlayerService {
         Preferences preferences = getPreferences(playerDTO.getPreferences());
         byId.get().set(playerDTO, null, preferences);
 
-        if(playerDTO.getTeam().isPresent()){
+        if (playerDTO.getTeam().isPresent()) {
             Team team = teamService.getTeam(playerDTO.getTeam().get());
             byId.get().setTeam(team);
         }
@@ -139,9 +129,15 @@ public class PlayerService {
             throw new PlayerNotFound("Player not found");
         }
 
-        // Si es el último jugador del equipo, este se elimina.
-        if(byId.get().getTeam() != null && byId.get().getTeam().getMembers().size() == 1){
-            teamService.deleteTeam(byId.get().getTeam().getId());
+        if (byId.get().getTeam() != null) {
+            // Si es el último jugador del equipo, este se elimina.
+            if (byId.get().getTeam().getMembers().size() == 1) {
+                teamService.deleteTeam(byId.get().getTeam().getId());
+            }
+            // Si no, se eliminar el jugador
+            else{
+                teamService.deleteTeamMember(byId.get().getTeam().getId(), byId.get().getId());
+            }
         }
 
         playerRepository.deleteById(id);
@@ -168,5 +164,41 @@ public class PlayerService {
         }
 
         return new Preferences(game, role.get(), rank.get(), preferencesDTO.getFeminine());
+    }
+
+    public Set<Player> getAllPlayersForTeam(UUID teamId) {
+
+        Team team = teamService.getTeam(teamId);
+
+        Stream<Player> members = team.getMembers().stream();
+        Optional<Player> player = members.findFirst();
+
+        if (!player.isPresent()) {
+            throw new InvalidTeam("Team is empty");
+        }
+
+        // Get the game
+        Game game = player.get().getPreferences().getGame();
+
+        // Get the availableRoles
+        Set<Role> allRoles = gameService.getGame(game.getName()).getRoles();
+        Set<Role> takenRoles = members.map(p -> p.getPreferences().getRole()).collect(Collectors.toSet());
+        List<Role> availableRoles = allRoles.stream().filter(role -> !takenRoles.contains(role)).collect(Collectors.toList());
+
+        // Get the maximum and minimum rank
+        int averageRank = (int) (members.map(p -> p.getPreferences().getRank().getValue()).reduce(0, Integer::sum) / members.count());
+        int minRankValue = averageRank - 3;
+        int maxRankValue = averageRank + 3;
+
+        Optional<List<Player>> forTeam = playerRepository.findAllByPreferences(game, minRankValue, maxRankValue, availableRoles);
+
+        // If not found, empty set returned
+        if (!forTeam.isPresent()) {
+            return Collections.emptySet();
+        }
+
+        Set<Player> players = forTeam.get().stream().collect(Collectors.toSet());
+
+        return players;
     }
 }

@@ -46,7 +46,9 @@ public class TeamService {
             throw new InvalidTeam("Members cannot be empty");
         }
 
+        // Bidirectional part
         team.setMembers(membersSet);
+        membersSet.forEach(player -> player.setTeam(team));
 
         return teamRepository.save(team).getId();
     }
@@ -90,7 +92,9 @@ public class TeamService {
             throw new MemberAlreadyInTeam("Member already in team");
         }
 
+        // Bidirectional part
         team.get().getMembers().add(player.get());
+        player.get().setTeam(team.get());
 
         return teamRepository.save(team.get());
     }
@@ -118,16 +122,24 @@ public class TeamService {
             throw new MemberNumberIsLow("Cannot delete member when there is only one left");
         }
 
+        // Bidirectional part
         team.get().getMembers().remove(player.get());
+        player.get().setTeam(null);
 
         return teamRepository.save(team.get());
     }
 
     public void deleteTeam(@NotNull UUID id) {
 
-        if (!teamRepository.existsById(id)) {
+        Optional<Team> team = teamRepository.findById(id);
+
+        if (!team.isPresent()) {
             throw new TeamNotFound("Team not found");
         }
+
+        // Bidirectional part
+        team.get().getMembers().forEach(player -> player.setTeam(null));
+
         teamRepository.deleteById(id);
     }
 }

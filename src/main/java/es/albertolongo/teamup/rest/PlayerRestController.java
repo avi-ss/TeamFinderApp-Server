@@ -78,9 +78,11 @@ public class PlayerRestController implements PlayerApi {
     }
 
     @Override
-    public ResponseEntity<Set<PlayerDTO>> getAllPlayers() {
-        Set<Player> players = playerService.getAllPlayers();
-        Set<PlayerDTO> playerDTOS = players.stream().map(player -> player.toDTO()).collect(Collectors.toSet());
+    public ResponseEntity<Set<PlayerDTO>> getAllPlayersForTeam(UUID teamId) {
+        Set<Player> players = playerService.getAllPlayersForTeam(teamId);
+
+        Set<PlayerDTO> playerDTOS = players.stream().map(p -> p.toDTO()).collect(Collectors.toSet());
+
         return ResponseEntity.ok(playerDTOS);
     }
 
