@@ -4,6 +4,9 @@ import es.albertolongo.teamup.model.dto.TeamDTO;
 import es.albertolongo.teamup.model.enums.UserType;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Objects;
@@ -15,18 +18,42 @@ import java.util.stream.Collectors;
 @PrimaryKeyJoinColumn()
 public class Team extends User implements Serializable {
 
+    @Column(unique = true)
+    @NotBlank
+    @Size(min = 5, max = 16)
+    @Pattern(regexp = "^[^0-9\\\\]\\w+$")
+    private String name;
+
     @OneToMany(fetch = FetchType.EAGER,
             cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH},
             mappedBy = "team")
     private Set<Player> members = new HashSet<>();
 
+    @Embedded
+    private TeamPreferences teamPreferences;
+
     public Team() {
         super(UserType.TEAM);
     }
 
-    public Team(Set<Player> members) {
+    public Team(String name) {
         super(UserType.TEAM);
+        this.name = name;
+    }
+
+    public Team(String name, Set<Player> members, TeamPreferences teamPreferences) {
+        super(UserType.TEAM);
+        this.name = name;
         this.members = members;
+        this.teamPreferences = teamPreferences;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Set<Player> getMembers() {
@@ -37,14 +64,24 @@ public class Team extends User implements Serializable {
         this.members = members;
     }
 
+    public TeamPreferences getTeamPreferences() {
+        return teamPreferences;
+    }
+
+    public void setTeamPreferences(TeamPreferences preferences) {
+        this.teamPreferences = preferences;
+    }
+
     public TeamDTO toDTO() {
 
         TeamDTO teamDTO = new TeamDTO();
+
         Set<UUID> dtoMembers = members.stream()
                 .map(id -> id.getId())
                 .collect(Collectors.toSet());
 
         teamDTO.setId(id);
+        teamDTO.setName(name);
         teamDTO.setMembers(dtoMembers);
 
         return teamDTO;

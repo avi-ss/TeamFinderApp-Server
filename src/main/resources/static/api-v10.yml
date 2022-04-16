@@ -222,7 +222,7 @@ paths:
                 $ref: '#/components/schemas/userId'
         '400':
           $ref: '#/components/responses/BadRequest'
-  /player/team/{teamId}:
+  /player/forTeam/{teamId}:
     get:
       tags:
         - player
@@ -232,6 +232,33 @@ paths:
       operationId: getAllPlayersForTeam
       parameters:
         - $ref: '#/components/parameters/teamId'
+      responses:
+        '200':
+          description: >-
+            Okay. Los jugadores fueron encontrados y devueltos
+            satisfactoriamente
+          content:
+            application/json:
+              schema:
+                type: array
+                description: Lista de los jugadores disponibles
+                items:
+                  $ref: '#/components/schemas/playerDTO'
+                uniqueItems: true
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /player/forPlayer/{playerId}:
+    get:
+      tags:
+        - player
+      summary: >-
+        Obtiene una lista con todos los jugadores disponibles recomendables para
+        un jugador
+      operationId: getAllPlayersForPlayer
+      parameters:
+        - $ref: '#/components/parameters/playerId'
       responses:
         '200':
           description: >-
@@ -391,6 +418,31 @@ paths:
         - team
       summary: Obtiene una lista con todos los equipos
       operationId: getAllTeams
+      responses:
+        '200':
+          description: Okay. Los equipos fueron encontrados y devueltos satisfactoriamente
+          content:
+            application/json:
+              schema:
+                type: array
+                description: Lista de los equipos disponibles
+                items:
+                  $ref: '#/components/schemas/teamDTO'
+                uniqueItems: true
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /team/forPlayer/{playerId}:
+    get:
+      tags:
+        - team
+      summary: >-
+        Obtiene una lista con todos los equipos disponibles recomendables para
+        un jugador
+      operationId: getAllTeamsForPlayer
+      parameters:
+        - $ref: '#/components/parameters/playerId'
       responses:
         '200':
           description: Okay. Los equipos fueron encontrados y devueltos satisfactoriamente
@@ -598,7 +650,7 @@ components:
           description: Apodo del jugador
           minLength: 5
           maxLength: 16
-          pattern: ^[^0-9]\w+$
+          pattern: ^[^0-9\\]\w+$
         email:
           type: string
           format: email
@@ -635,6 +687,12 @@ components:
       properties:
         id:
           $ref: '#/components/schemas/userId'
+        name:
+          type: string
+          description: Nombre del equipo
+          minLength: 5
+          maxLength: 16
+          pattern: ^[^0-9\\]\w+$
         members:
           type: array
           description: Lista de identificadores de los miembros del equipo

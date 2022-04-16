@@ -19,7 +19,7 @@ public class Player extends User implements Serializable {
     @Column(unique = true)
     @NotBlank
     @Size(min = 5, max = 16)
-    @Pattern(regexp = "^[^0-9]\\w+$")
+    @Pattern(regexp = "^[^0-9\\\\]\\w+$")
     private String nickname;
 
     @Column(unique = true)

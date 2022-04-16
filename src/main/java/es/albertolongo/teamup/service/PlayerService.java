@@ -34,6 +34,9 @@ public class PlayerService {
     GameService gameService;
 
     @Autowired
+    UserService userService;
+
+    @Autowired
     TeamService teamService;
 
     public PlayerService() {
@@ -178,19 +181,19 @@ public class PlayerService {
         }
 
         // Get the game
-        Game game = player.get().getPreferences().getGame();
+        Game game = team.getTeamPreferences().getGame();
 
         // Get the availableRoles
         Set<Role> allRoles = gameService.getGame(game.getName()).getRoles();
-        Set<Role> takenRoles = members.map(p -> p.getPreferences().getRole()).collect(Collectors.toSet());
+        List<Role> takenRoles = team.getTeamPreferences().getTakenRoles();
         List<Role> availableRoles = allRoles.stream().filter(role -> !takenRoles.contains(role)).collect(Collectors.toList());
 
         // Get the maximum and minimum rank
-        int averageRank = (int) (members.map(p -> p.getPreferences().getRank().getValue()).reduce(0, Integer::sum) / members.count());
+        int averageRank = team.getTeamPreferences().getAverageRank().getValue();
         int minRankValue = averageRank - 3;
         int maxRankValue = averageRank + 3;
 
-        Optional<List<Player>> forTeam = playerRepository.findAllByPreferences(game, minRankValue, maxRankValue, availableRoles);
+        Optional<List<Player>> forTeam = playerRepository.findAllPlayersForTeam(game, minRankValue, maxRankValue, availableRoles);
 
         // If not found, empty set returned
         if (!forTeam.isPresent()) {
@@ -198,6 +201,45 @@ public class PlayerService {
         }
 
         Set<Player> players = forTeam.get().stream().collect(Collectors.toSet());
+
+        // Removing the users which the TEAM liked from the list of suitable PLAYERS
+        Set<UUID> likedUsers = userService.getUser(teamId).getLikedUsers().stream().map(user -> user.getId()).collect(Collectors.toSet());
+        players = players.stream().filter(player1 -> !likedUsers.contains(player1.getId())).collect(Collectors.toSet());
+
+        return players;
+    }
+
+    public Set<Player> getAllPlayersForPlayer(UUID playerId) {
+
+        Optional<Player> player = playerRepository.findById(playerId);
+
+        if (!player.isPresent()) {
+            throw new PlayerNotFound("Player not found");
+        }
+
+        // Get the game
+        Game game = player.get().getPreferences().getGame();
+
+        // Get the role
+        Role role = player.get().getPreferences().getRole();
+
+        // Get the maximum and minimum rank
+        int rankValue = player.get().getPreferences().getRank().getValue();
+        int minRankValue = rankValue - 3;
+        int maxRankValue = rankValue + 3;
+
+        Optional<List<Player>> forPlayer = playerRepository.findAllPlayersForPlayer(game, role, minRankValue, maxRankValue);
+
+        // If not found, empty set returned
+        if (!forPlayer.isPresent()) {
+            return Collections.emptySet();
+        }
+
+        Set<Player> players = forPlayer.get().stream().collect(Collectors.toSet());
+
+        // Removing the users which the PLAYER liked from the list of suitable PLAYERS
+        Set<UUID> likedUsers = userService.getUser(playerId).getLikedUsers().stream().map(user -> user.getId()).collect(Collectors.toSet());
+        players = players.stream().filter(player1 -> !likedUsers.contains(player1.getId())).collect(Collectors.toSet());
 
         return players;
     }

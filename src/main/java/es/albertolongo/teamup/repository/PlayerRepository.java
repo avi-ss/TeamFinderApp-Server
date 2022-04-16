@@ -25,9 +25,17 @@ public interface PlayerRepository extends CrudRepository<Player, UUID> {
     @Query("SELECT p FROM Player p WHERE " +
             "p.team.id IS NULL AND " +
             "p.preferences.game=:game AND " +
-            "p.preferences.rank.value>:minRankValue AND p.preferences.rank.value<:maxRankValue AND " +
-            "p.preferences.role NOT IN :availableRoles")
-    Optional<List<Player>> findAllByPreferences(@Param("game") Game game,
+            "p.preferences.rank.value>:minRankValue AND " +
+            "p.preferences.rank.value<:maxRankValue AND " +
+            "p.preferences.role IN :availableRoles")
+    Optional<List<Player>> findAllPlayersForTeam(@Param("game") Game game,
                                                 @Param("minRankValue") int minRankValue, @Param("maxRankValue") int maxRankValue,
                                                 @Param("availableRoles") List<Role> availableRoles);
+
+    @Query("SELECT p FROM Player p WHERE " +
+            "p.preferences.game=:game AND " +
+            "p.preferences.rank.value>:minRankValue AND p.preferences.rank.value<:maxRankValue AND " +
+            "p.preferences.role<>:role")
+    Optional<List<Player>> findAllPlayersForPlayer(@Param("game") Game game, @Param("role") Role role,
+                                                @Param("minRankValue") int minRankValue, @Param("maxRankValue") int maxRankValue);
 }

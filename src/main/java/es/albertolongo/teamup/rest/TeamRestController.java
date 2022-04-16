@@ -65,6 +65,15 @@ public class TeamRestController implements TeamApi {
     }
 
     @Override
+    public ResponseEntity<Set<TeamDTO>> getAllTeamsForPlayer(UUID playerId) {
+        Set<Team> teams = teamService.getAllTeamsForPlayer(playerId);
+
+        Set<TeamDTO> teamDTOS = teams.stream().map(team -> team.toDTO()).collect(Collectors.toSet());
+
+        return ResponseEntity.ok(teamDTOS);
+    }
+
+    @Override
     public ResponseEntity<TeamDTO> addMemberToTeam(UUID teamId, UUID playerId) {
         Team team = teamService.addTeamMember(teamId, playerId);
         return ResponseEntity.ok(team.toDTO());

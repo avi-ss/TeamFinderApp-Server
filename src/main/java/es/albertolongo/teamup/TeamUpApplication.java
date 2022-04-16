@@ -131,12 +131,7 @@ public class TeamUpApplication implements CommandLineRunner {
         LOG.info("USER 4: " + id4.toString());
 
         // Setting Team 1
-        TeamDTO team1DTO = new TeamDTO().addMembersItem(id1);
-        UUID teamId1 = teamService.registerTeam(team1DTO);
-
-        player2DTO.team(teamId1);
-        playerService.modifyPlayer(id2, player2DTO);
-
+        UUID teamId1 = teamService.registerTeam(new TeamDTO().name("Fortinayt").addMembersItem(id1));
         LOG.info("TEAM 1 - {USER 1}: " + teamId1.toString() + " - MEMBERS: " + teamService.getTeam(teamId1).getMembers().size());
 
         // Setting a match between USER 1 and USER 2
@@ -147,7 +142,21 @@ public class TeamUpApplication implements CommandLineRunner {
         userService.addLike(id1, id3);
         userService.addLike(id3, id1);
 
-        LOG.info("MATCH LIST - USER 1: " + userService.getMatchedUsers(id1).toString());
+        LOG.info("MATCH LIST - USER 1: ");
+        userService.getMatchedUsers(id1).forEach(player -> LOG.info(player.toString()));
+
+        // Getting all the players suitable for USER 1
+        LOG.info("SUITABLE PLAYERS - USER 1: ");
+        playerService.getAllPlayersForPlayer(id1).forEach(player -> LOG.info(player.getNickname()));
+
+        // Getting all the players suitable for TEAM 1
+        LOG.info("SUITABLE PLAYERS - TEAM 1: ");
+        playerService.getAllPlayersForTeam(teamId1).forEach(player -> LOG.info(player.getNickname()));
+
+
+        // Getting all the teams suitable for USER 2
+        LOG.info("SUITABLE TEAMS - USER 2: ");
+        teamService.getAllTeamsForPlayer(id2).forEach(team -> LOG.info(team.getName()));
     }
 
 }

@@ -87,6 +87,15 @@ public class PlayerRestController implements PlayerApi {
     }
 
     @Override
+    public ResponseEntity<Set<PlayerDTO>> getAllPlayersForPlayer(UUID playerId) {
+        Set<Player> players = playerService.getAllPlayersForPlayer(playerId);
+
+        Set<PlayerDTO> playerDTOS = players.stream().map(p -> p.toDTO()).collect(Collectors.toSet());
+
+        return ResponseEntity.ok(playerDTOS);
+    }
+
+    @Override
     public ResponseEntity<PlayerDTO> modifyPlayer(UUID playerId, PlayerDTO playerDTO) {
         Player newPlayer = playerService.modifyPlayer(playerId, playerDTO);
         return ResponseEntity.status(HttpStatus.OK).body(newPlayer.toDTO());
