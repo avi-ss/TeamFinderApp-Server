@@ -1,8 +1,11 @@
 package es.albertolongo.teamup.model.entity;
 
 import es.albertolongo.teamup.model.dto.PreferencesDTO;
+import es.albertolongo.teamup.model.enums.UserType;
 
 import javax.persistence.Embeddable;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.ManyToOne;
 import java.io.Serializable;
 
@@ -20,16 +23,21 @@ public class Preferences implements Serializable {
 
     private boolean onlyFeminine;
 
+    @Enumerated(EnumType.STRING)
+    private UserType wantedUserType;
+
     public Preferences() {
         onlyFeminine = false;
+        wantedUserType = UserType.PLAYER;
     }
 
     public Preferences(Game game, Role role, Rank rank,
-                       boolean onlyFeminine) {
+                       boolean onlyFeminine, String wantedUserType) {
         this.game = game;
         this.role = role;
         this.rank = rank;
         this.onlyFeminine = onlyFeminine;
+        this.wantedUserType = UserType.valueOf(wantedUserType.toUpperCase());
     }
 
     public Game getGame() {
@@ -64,6 +72,14 @@ public class Preferences implements Serializable {
         this.onlyFeminine = feminine;
     }
 
+    public UserType getWantedUserType() {
+        return wantedUserType;
+    }
+
+    public void setWantedUserType(UserType wantedUserType) {
+        this.wantedUserType = wantedUserType;
+    }
+
     public PreferencesDTO toDTO(){
 
         PreferencesDTO preferencesDTO = new PreferencesDTO();
@@ -71,6 +87,7 @@ public class Preferences implements Serializable {
         preferencesDTO.setRole(role.getRole());
         preferencesDTO.setRank(rank.getRank());
         preferencesDTO.setFeminine(onlyFeminine);
+        preferencesDTO.setWantedUser(wantedUserType.toString());
 
         return preferencesDTO;
     }

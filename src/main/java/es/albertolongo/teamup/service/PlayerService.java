@@ -166,7 +166,7 @@ public class PlayerService {
             throw new RankNotFound("Rank not found");
         }
 
-        return new Preferences(game, role.get(), rank.get(), preferencesDTO.getFeminine());
+        return new Preferences(game, role.get(), rank.get(), preferencesDTO.getFeminine(), preferencesDTO.getWantedUser());
     }
 
     public Set<Player> getAllPlayersForTeam(UUID teamId) {

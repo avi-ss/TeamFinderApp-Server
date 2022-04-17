@@ -4,6 +4,7 @@ import es.albertolongo.teamup.api.TeamApi;
 import es.albertolongo.teamup.exception.player.PlayerNotFound;
 import es.albertolongo.teamup.exception.team.*;
 import es.albertolongo.teamup.model.dto.TeamDTO;
+import es.albertolongo.teamup.model.dto.TeamPreferencesDTO;
 import es.albertolongo.teamup.model.entity.Team;
 import es.albertolongo.teamup.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,12 +57,9 @@ public class TeamRestController implements TeamApi {
     }
 
     @Override
-    public ResponseEntity<Set<TeamDTO>> getAllTeams() {
-        Set<Team> teams = teamService.getAllTeams();
-
-        Set<TeamDTO> teamDTOS = teams.stream().map(team -> team.toDTO()).collect(Collectors.toSet());
-
-        return ResponseEntity.ok(teamDTOS);
+    public ResponseEntity<TeamPreferencesDTO> getTeamPreferencesById(UUID teamId) {
+        Team team = teamService.getTeam(teamId);
+        return ResponseEntity.ok(team.getTeamPreferences().toDTO());
     }
 
     @Override

@@ -4,6 +4,7 @@ import es.albertolongo.teamup.exception.player.PlayerNotFound;
 import es.albertolongo.teamup.exception.team.*;
 import es.albertolongo.teamup.model.dto.TeamDTO;
 import es.albertolongo.teamup.model.entity.*;
+import es.albertolongo.teamup.model.enums.UserType;
 import es.albertolongo.teamup.repository.PlayerRepository;
 import es.albertolongo.teamup.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,7 @@ public class TeamService {
         // Bidirectional part
         team.setMembers(membersSet);
         membersSet.forEach(player -> player.setTeam(team));
+        membersSet.forEach(player -> player.getPreferences().setWantedUserType(UserType.PLAYER));
 
         // Update the team preferences;
         return updateTeamPreferences(team, membersSet).getId();
@@ -96,6 +98,7 @@ public class TeamService {
         // Bidirectional part
         team.get().getMembers().add(player.get());
         player.get().setTeam(team.get());
+        player.get().getPreferences().setWantedUserType(UserType.PLAYER);
 
         // Update the team preferences;
         return updateTeamPreferences(team.get(), members);

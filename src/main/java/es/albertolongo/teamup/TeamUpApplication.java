@@ -98,25 +98,25 @@ public class TeamUpApplication implements CommandLineRunner {
         PlayerDTO player1DTO = new PlayerDTO().nickname("usuario1")
                 .email("usuario1@gmail.com").fullname("Usuario Uno")
                 .password("password1").gender("MASC").birthday(LocalDate.now().minusYears(16))
-                .preferences(new PreferencesDTO().game("VALORANT").rank("Bronze 1").role("Sentinel").feminine(false));
+                .preferences(new PreferencesDTO().game("VALORANT").rank("Bronze 1").role("Sentinel").feminine(false).wantedUser("player"));
 
         // Setting Player 2
         PlayerDTO player2DTO = new PlayerDTO().nickname("usuario2")
                 .email("usuario2@gmail.com").fullname("Usuario Dos")
                 .password("password2").gender("FEM").birthday(LocalDate.now().minusYears(16))
-                .preferences(new PreferencesDTO().game("VALORANT").rank("Bronze 2").role("Duelist").feminine(false));
+                .preferences(new PreferencesDTO().game("VALORANT").rank("Bronze 2").role("Duelist").feminine(false).wantedUser("player"));
 
         // Setting Player 3
         PlayerDTO player3DTO = new PlayerDTO().nickname("usuario3")
                 .email("usuario3@gmail.com").fullname("Usuario Tres")
                 .password("password3").gender("OTHER").birthday(LocalDate.now().minusYears(16))
-                .preferences(new PreferencesDTO().game("VALORANT").rank("Bronze 3").role("Duelist").feminine(false));
+                .preferences(new PreferencesDTO().game("VALORANT").rank("Bronze 3").role("Controller").feminine(false).wantedUser("player"));
 
         // Setting Player 4
         PlayerDTO player4DTO = new PlayerDTO().nickname("usuario4")
                 .email("usuario4@gmail.com").fullname("Usuario Cuatro")
                 .password("password4").gender("FEM").birthday(LocalDate.now().minusYears(16))
-                .preferences(new PreferencesDTO().game("League of Legends").rank("Bronze 4").role("Mid").feminine(false));
+                .preferences(new PreferencesDTO().game("League of Legends").rank("Bronze 4").role("Mid").feminine(false).wantedUser("player"));
 
         UUID id1 = playerService.registerPlayer(player1DTO);
         LOG.info("USER 1: " + id1.toString());
@@ -135,12 +135,12 @@ public class TeamUpApplication implements CommandLineRunner {
         LOG.info("TEAM 1 - {USER 1}: " + teamId1.toString() + " - MEMBERS: " + teamService.getTeam(teamId1).getMembers().size());
 
         // Setting a match between USER 1 and USER 2
-        userService.addLike(id1, id2);
-        userService.addLike(id2, id1);
+//        userService.addLike(id1, id2);
+//        userService.addLike(id2, id1);
 
         // Setting a match between USER 1 and USER 3
-        userService.addLike(id1, id3);
-        userService.addLike(id3, id1);
+//        userService.addLike(id1, id3);
+//        userService.addLike(id3, id1);
 
         LOG.info("MATCH LIST - USER 1: ");
         userService.getMatchedUsers(id1).forEach(player -> LOG.info(player.toString()));

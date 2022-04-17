@@ -413,26 +413,6 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
-    get:
-      tags:
-        - team
-      summary: Obtiene una lista con todos los equipos
-      operationId: getAllTeams
-      responses:
-        '200':
-          description: Okay. Los equipos fueron encontrados y devueltos satisfactoriamente
-          content:
-            application/json:
-              schema:
-                type: array
-                description: Lista de los equipos disponibles
-                items:
-                  $ref: '#/components/schemas/teamDTO'
-                uniqueItems: true
-        '400':
-          $ref: '#/components/responses/BadRequest'
-        '404':
-          $ref: '#/components/responses/NotFound'
   /team/forPlayer/{playerId}:
     get:
       tags:
@@ -487,6 +467,27 @@ paths:
       responses:
         '200':
           description: Okay. El equipo fue eliminado satisfactoriamente
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /team/{teamId}/preferences:
+    get:
+      tags:
+        - team
+      summary: Obtiene las preferencias de un equipo en específico
+      operationId: getTeamPreferencesById
+      parameters:
+        - $ref: '#/components/parameters/teamId'
+      responses:
+        '200':
+          description: >-
+            Okay. El equipo fue encontrado y se devolvieron sus preferencias
+            satisfactoriamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/teamPreferencesDTO'
         '400':
           $ref: '#/components/responses/BadRequest'
         '404':
@@ -719,6 +720,35 @@ components:
             Denota la preferencia de solo visualizar equipos o jugadoras
             femeninas. Esta opción solo se tiene en cuenta si el género del
             jugador o del equipo completo es femenino
+        wantedUser:
+          type: string
+          description: Tipo de usuario que quiere encontrar el jugador
+    teamPreferencesDTO:
+      type: object
+      properties:
+        game:
+          type: string
+          description: Juego al que el equipo pertenece
+        averageRank:
+          type: string
+          description: Rango promedio del equipo como conjunto
+        takenRoles:
+          type: array
+          description: Lista de roles escogidos por los jugadores del equipo
+          items:
+            type: string
+            description: Rol del jugador dentro del juego
+          minItems: 1
+          maxItems: 5
+        feminine:
+          type: boolean
+          description: >-
+            Denota la preferencia de solo visualizar equipos o jugadoras
+            femeninas. Esta opción solo se tiene en cuenta si el género del
+            jugador o del equipo completo es femenino
+        wantedUser:
+          type: string
+          description: Tipo de usuario que quiere encontrar el jugador
     userDTO:
       type: object
       properties:
