@@ -43,6 +43,9 @@ public class Player extends User implements Serializable {
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Team team;
 
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "founder")
+    private Team founderOf;
+
     @Embedded
     protected Preferences preferences;
 
@@ -50,9 +53,11 @@ public class Player extends User implements Serializable {
         super(UserType.PLAYER);
     }
 
-    public Player(PlayerDTO playerDTO, Team team, Preferences preferences) {
+    public Player(PlayerDTO playerDTO, Preferences preferences) {
         super(UserType.PLAYER);
-        set(playerDTO, team, preferences);
+        set(playerDTO, preferences);
+        this.team = null;
+        this.founderOf = null;
     }
 
     public String getNickname() {
@@ -107,6 +112,14 @@ public class Player extends User implements Serializable {
         this.team = team;
     }
 
+    public Team getFounderOf() {
+        return founderOf;
+    }
+
+    public void setFounderOf(Team founderOf) {
+        this.founderOf = founderOf;
+    }
+
     public Preferences getPreferences() {
         return preferences;
     }
@@ -115,15 +128,24 @@ public class Player extends User implements Serializable {
         this.preferences = preferences;
     }
 
-    public void set(PlayerDTO playerDTO, Team team, Preferences preferences) {
+    public void set(PlayerDTO playerDTO, Preferences preferences) {
         this.nickname = playerDTO.getNickname();
         this.email = playerDTO.getEmail();
-        this.password = CoderPassword.encode(playerDTO.getPassword());
+
+        // The player want to change the password
+        if(playerDTO.getPassword().isPresent()){
+            this.password = CoderPassword.encode(playerDTO.getPassword().get());
+        }
+
         this.fullname = playerDTO.getFullname();
         this.birthday = playerDTO.getBirthday();
         this.gender = Gender.valueOf(playerDTO.getGender().toUpperCase());
-        this.team = team;
         this.preferences = preferences;
+
+        // If its a male, we cannot let it have the only feminine flag active
+        if(this.gender == Gender.MASC){
+            this.preferences.setOnlyFeminine(false);
+        }
     }
 
     public PlayerDTO toDTO() {
@@ -133,7 +155,8 @@ public class Player extends User implements Serializable {
         playerDTO.setId(id);
         playerDTO.setNickname(nickname);
         playerDTO.setEmail(email);
-        playerDTO.setPassword(password);
+        // We don't want to send the password in the DTO
+        playerDTO.setPassword(JsonNullable.undefined());
         playerDTO.setFullname(fullname);
         playerDTO.setBirthday(birthday);
         playerDTO.setGender(gender.toString());

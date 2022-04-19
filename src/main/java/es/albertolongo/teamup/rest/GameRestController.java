@@ -42,11 +42,13 @@ public class GameRestController implements GameApi {
         return ResponseEntity.badRequest().body(e.getMessage());
     }
 
+    /*
     @Override
     public ResponseEntity<Long> addGame(GameDTO gameDTO) {
         Long id = gameService.addGame(gameDTO);
         return ResponseEntity.ok(id);
     }
+     */
 
     @Override
     public ResponseEntity<GameDTO> getGameById(Long gameId) {
@@ -65,6 +67,7 @@ public class GameRestController implements GameApi {
         return ResponseEntity.ok(gameDTOS);
     }
 
+    /*
     @Override
     public ResponseEntity<GameDTO> addRankToGame(Long gameId, RankDTO rankDTO) {
         Game game = gameService.addRank(gameId, rankDTO);
@@ -76,4 +79,5 @@ public class GameRestController implements GameApi {
         Game game = gameService.addRole(gameId, roleDTO);
         return ResponseEntity.ok(game.toDTO());
     }
+     */
 }

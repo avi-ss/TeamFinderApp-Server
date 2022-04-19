@@ -39,15 +39,23 @@ public class TeamService {
 
         Team team = new Team(teamDTO.getName());
 
+        Optional<Player> founder = playerRepository.findById(teamDTO.getFounder());
+        if(!founder.isPresent()){
+            throw new InvalidTeam("Team doesnt have founder");
+        }
+
         Iterable<Player> members = playerRepository.findAllById(teamDTO.getMembers());
         Set<Player> membersSet = StreamSupport.stream(members.spliterator(),
                 false).collect(Collectors.toSet());
 
-        if (membersSet.isEmpty()) {
-            throw new InvalidTeam("Members cannot be empty");
+        if(!membersSet.contains(founder.get())){
+            throw new InvalidTeam("Team Members doesnt contain founder");
         }
 
         // Bidirectional part
+        team.setFounder(founder.get());
+        founder.get().setFounderOf(team);
+
         team.setMembers(membersSet);
         membersSet.forEach(player -> player.setTeam(team));
         membersSet.forEach(player -> player.getPreferences().setWantedUserType(UserType.PLAYER));
@@ -65,15 +73,6 @@ public class TeamService {
         }
 
         return team.get();
-    }
-
-    public Set<Team> getAllTeams(){
-
-        Iterable<Team> teamsIt = teamRepository.findAll();
-
-        Set<Team> teams = StreamSupport.stream(teamsIt.spliterator(), false).collect(Collectors.toSet());
-
-        return teams;
     }
 
     public Team addTeamMember(@NotNull UUID teamId, @NotNull UUID playerId) {
@@ -117,6 +116,10 @@ public class TeamService {
             throw new PlayerNotFound("Player not found");
         }
 
+        if(player.get() == team.get().getFounder()){
+            throw new PlayerNotFound("Cannot delete founder");
+        }
+
         Set<Player> members = team.get().getMembers();
 
         if (!members.contains(player.get())) {
@@ -144,6 +147,7 @@ public class TeamService {
         }
 
         // Bidirectional part
+        team.get().getFounder().setFounderOf(null);
         team.get().getMembers().forEach(player -> player.setTeam(null));
 
         teamRepository.deleteById(id);

@@ -131,7 +131,7 @@ public class TeamUpApplication implements CommandLineRunner {
         LOG.info("USER 4: " + id4.toString());
 
         // Setting Team 1
-        UUID teamId1 = teamService.registerTeam(new TeamDTO().name("Fortinayt").addMembersItem(id1));
+        UUID teamId1 = teamService.registerTeam(new TeamDTO().name("Fortinayt").founder(id1).addMembersItem(id1).addMembersItem(id2));
         LOG.info("TEAM 1 - {USER 1}: " + teamId1.toString() + " - MEMBERS: " + teamService.getTeam(teamId1).getMembers().size());
 
         // Setting a match between USER 1 and USER 2

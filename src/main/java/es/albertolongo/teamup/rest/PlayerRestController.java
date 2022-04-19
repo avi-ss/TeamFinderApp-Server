@@ -9,13 +9,20 @@ import es.albertolongo.teamup.exception.player.NicknameAlreadyInUse;
 import es.albertolongo.teamup.exception.player.PlayerNotFound;
 import es.albertolongo.teamup.model.dto.PlayerDTO;
 import es.albertolongo.teamup.model.entity.Player;
+import es.albertolongo.teamup.security.jwt.JwtProvider;
 import es.albertolongo.teamup.service.PlayerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.validation.ConstraintViolationException;
+import java.security.Principal;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -96,12 +103,14 @@ public class PlayerRestController implements PlayerApi {
     }
 
     @Override
+    @PreAuthorize("#playerDTO.playerId == authentication.principal.uuid")
     public ResponseEntity<PlayerDTO> modifyPlayer(UUID playerId, PlayerDTO playerDTO) {
         Player newPlayer = playerService.modifyPlayer(playerId, playerDTO);
         return ResponseEntity.status(HttpStatus.OK).body(newPlayer.toDTO());
     }
 
     @Override
+    @PreAuthorize("#playerId == authentication.principal.uuid")
     public ResponseEntity<Void> deletePlayer(UUID playerId) {
         playerService.deletePlayer(playerId);
         return ResponseEntity.status(HttpStatus.OK).build();

@@ -3,10 +3,13 @@ package es.albertolongo.teamup.security.jwt;
 import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.JWTParser;
+import es.albertolongo.teamup.model.entity.Player;
 import es.albertolongo.teamup.security.jwt.dto.Token;
+import es.albertolongo.teamup.service.PlayerService;
 import io.jsonwebtoken.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,6 +19,7 @@ import org.springframework.stereotype.Component;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Component
@@ -28,6 +32,9 @@ public class JwtProvider {
 
     @Value("${jwt.expiration}")
     private int expiration;
+
+    @Autowired
+    PlayerService playerService;
 
     public String generateToken(Authentication auth) {
 

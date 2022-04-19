@@ -10,6 +10,7 @@ import es.albertolongo.teamup.service.TeamService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.ConstraintViolationException;
@@ -45,6 +46,8 @@ public class TeamRestController implements TeamApi {
     }
 
     @Override
+    // The founder has to be the one who create the team
+    @PreAuthorize("#teamDTO.founder == authentication.principal.uuid")
     public ResponseEntity<UUID> addTeam(TeamDTO teamDTO) {
         UUID id = teamService.registerTeam(teamDTO);
         return ResponseEntity.ok(id);
@@ -72,18 +75,21 @@ public class TeamRestController implements TeamApi {
     }
 
     @Override
+    @PreAuthorize("#teamId == authentication.principal.teamId")
     public ResponseEntity<TeamDTO> addMemberToTeam(UUID teamId, UUID playerId) {
         Team team = teamService.addTeamMember(teamId, playerId);
         return ResponseEntity.ok(team.toDTO());
     }
 
     @Override
+    @PreAuthorize("#teamId == authentication.principal.teamId")
     public ResponseEntity<TeamDTO> deleteMemberOfTeam(UUID teamId, UUID playerId) {
         Team team = teamService.deleteTeamMember(teamId, playerId);
         return ResponseEntity.ok(team.toDTO());
     }
 
     @Override
+    @PreAuthorize("#teamId == authentication.principal.teamId")
     public ResponseEntity<Void> deleteTeam(UUID teamId) {
         teamService.deleteTeam(teamId);
         return ResponseEntity.status(HttpStatus.OK).build();

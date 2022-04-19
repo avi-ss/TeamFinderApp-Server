@@ -57,7 +57,7 @@ public class MessageService {
 
     public void updateStatuses(List<Message> messages, MessageStatus status) {
 
-        messages.stream().map(message -> {
+        messages = messages.stream().map(message -> {
             message.setStatus(status);
             return message;
         }).collect(Collectors.toList());

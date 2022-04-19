@@ -58,7 +58,7 @@ public class PlayerService {
 
         Preferences preferences = getPreferences(playerDTO.getPreferences());
 
-        Player player = new Player(playerDTO, null, preferences);
+        Player player = new Player(playerDTO, preferences);
 
         return playerRepository.save(player).getId();
     }
@@ -113,12 +113,7 @@ public class PlayerService {
         }
 
         Preferences preferences = getPreferences(playerDTO.getPreferences());
-        byId.get().set(playerDTO, null, preferences);
-
-        if (playerDTO.getTeam().isPresent()) {
-            Team team = teamService.getTeam(playerDTO.getTeam().get());
-            byId.get().setTeam(team);
-        }
+        byId.get().set(playerDTO, preferences);
 
         return playerRepository.save(byId.get());
     }

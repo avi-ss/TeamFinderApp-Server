@@ -659,6 +659,7 @@ components:
         password:
           type: string
           format: password
+          nullable: true
           description: Contraseña del jugador
           minLength: 8
           maxLength: 25
@@ -694,6 +695,10 @@ components:
           minLength: 5
           maxLength: 16
           pattern: ^[^0-9\\]\w+$
+        founder:
+          type: string
+          format: uuid
+          description: Identificador del fundador del equipo
         members:
           type: array
           description: Lista de identificadores de los miembros del equipo

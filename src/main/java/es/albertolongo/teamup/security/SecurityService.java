@@ -66,6 +66,7 @@ public class SecurityService extends WebSecurityConfigurerAdapter {
                 // El registro debe poder acceder a las comprobaciones de email y nickname
                 .antMatchers(HttpMethod.GET, "/player/checkNickname/**").permitAll()
                 .antMatchers(HttpMethod.GET, "/player/checkEmail/**").permitAll()
+                // El resto de peticiones tienes que estar autenticado
                 .anyRequest().authenticated()
                 .and().exceptionHandling().authenticationEntryPoint(jwtEntryPoint)
                 .and()

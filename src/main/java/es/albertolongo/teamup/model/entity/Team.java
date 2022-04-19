@@ -24,6 +24,9 @@ public class Team extends User implements Serializable {
     @Pattern(regexp = "^[^0-9\\\\]\\w+$")
     private String name;
 
+    @OneToOne(fetch = FetchType.EAGER)
+    private Player founder;
+
     @OneToMany(fetch = FetchType.EAGER,
             cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH},
             mappedBy = "team")
@@ -56,6 +59,14 @@ public class Team extends User implements Serializable {
         this.name = name;
     }
 
+    public Player getFounder() {
+        return founder;
+    }
+
+    public void setFounder(Player founder) {
+        this.founder = founder;
+    }
+
     public Set<Player> getMembers() {
         return members;
     }
@@ -82,6 +93,7 @@ public class Team extends User implements Serializable {
 
         teamDTO.setId(id);
         teamDTO.setName(name);
+        teamDTO.setFounder(founder.id);
         teamDTO.setMembers(dtoMembers);
 
         return teamDTO;
