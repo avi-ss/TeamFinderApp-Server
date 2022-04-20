@@ -66,6 +66,12 @@ public class TeamRestController implements TeamApi {
     }
 
     @Override
+    public ResponseEntity<Boolean> checkTeamWithName(String teamName) {
+        boolean response = teamService.checkTeamWithName(teamName);
+        return ResponseEntity.ok(response);
+    }
+
+    @Override
     public ResponseEntity<Set<TeamDTO>> getAllTeamsForPlayer(UUID playerId) {
         Set<Team> teams = teamService.getAllTeamsForPlayer(playerId);
 
@@ -82,7 +88,8 @@ public class TeamRestController implements TeamApi {
     }
 
     @Override
-    @PreAuthorize("#teamId == authentication.principal.teamId")
+    // Either the founder can kick anyone, or the own player can kick itself
+    @PreAuthorize("#teamId == authentication.principal.teamId || #playerId == authentication.principal.uuid")
     public ResponseEntity<TeamDTO> deleteMemberOfTeam(UUID teamId, UUID playerId) {
         Team team = teamService.deleteTeamMember(teamId, playerId);
         return ResponseEntity.ok(team.toDTO());

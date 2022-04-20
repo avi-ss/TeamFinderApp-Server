@@ -13,6 +13,8 @@ import java.util.UUID;
 @Repository
 public interface TeamRepository extends CrudRepository<Team, UUID> {
 
+    Optional<Team> findByName(String name);
+
     @Query("SELECT t FROM Team t LEFT JOIN t.teamPreferences.takenRoles r WHERE " +
             "t.teamPreferences.game=:game AND " +
             "t.teamPreferences.averageRank.value>:minRankValue AND " +

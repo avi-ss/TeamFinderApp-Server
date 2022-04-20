@@ -438,6 +438,25 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '404':
           $ref: '#/components/responses/NotFound'
+  /team/checkName/{teamName}:
+    get:
+      tags:
+        - team
+      summary: Comprueba si existe o no un equipo con el nombre pasado por parámetro
+      operationId: checkTeamWithName
+      parameters:
+        - $ref: '#/components/parameters/teamName'
+      responses:
+        '200':
+          description: Okay. El equipo fue encontrado o no.
+          content:
+            application/json:
+              schema:
+                type: boolean
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
   /team/{teamId}:
     get:
       tags:
@@ -577,6 +596,13 @@ components:
       schema:
         type: string
         format: uuid
+    teamName:
+      name: teamName
+      in: path
+      description: Nombre del equipo
+      required: true
+      schema:
+        type: string
     userId:
       name: userId
       in: path

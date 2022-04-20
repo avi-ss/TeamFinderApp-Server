@@ -205,4 +205,9 @@ public class TeamService {
 
         return teamRepository.save(team);
     }
+
+    public boolean checkTeamWithName(String teamName) {
+        Optional<Team> team = teamRepository.findByName(teamName);
+        return team.isPresent();
+    }
 }

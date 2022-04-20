@@ -88,19 +88,13 @@ public class PlayerService {
     public boolean checkPlayerWithNickname(@NotBlank String nickname) {
         Optional<Player> player = playerRepository.findByNickname(nickname);
 
-        if (!player.isPresent()) {
-            return false;
-        }
-        return true;
+        return player.isPresent();
     }
 
     public boolean checkPlayerWithEmail(@NotBlank String email) {
         Optional<Player> player = playerRepository.findByEmail(email);
 
-        if (!player.isPresent()) {
-            return false;
-        }
-        return true;
+        return player.isPresent();
     }
 
     @Transactional
